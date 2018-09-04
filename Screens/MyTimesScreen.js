@@ -78,7 +78,6 @@ export default class MyTimesScreen extends Component {
           </View>
         </ModalPopup>
       </Container>
-
     );
   }
 

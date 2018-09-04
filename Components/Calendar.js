@@ -56,10 +56,10 @@ export default class Calendar extends Component {
                 renderEmptyData = {() => {return (<Spinner size="large" />);}}
                 theme={{
                     agendaKnobColor: Colors.header,
-                    agendaBackgroundColor: "white",
+                    agendaBackgroundColor: Colors.lightGray,
                     selectedDotColor: Colors.orange,
                     dotColor: Colors.orange,
-                    backgroundColor: 'white',
+                    backgroundColor: Colors.lightGray,
                     calendarBackground: 'white',
                     textSectionTitleColor: Colors.gray,
                     selectedDayBackgroundColor: Colors.gray,

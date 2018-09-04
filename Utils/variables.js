@@ -3,7 +3,8 @@ export const Colors = {
     header: "#292929",
     black: "#555",
     gray: "#AAA", 
-    red: "#CC2853"
+    red: "#CC2853",
+    lightGray: "#f1f1f1"
 }
 
 export const FontSize = {

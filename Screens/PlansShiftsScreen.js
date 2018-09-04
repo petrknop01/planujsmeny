@@ -52,7 +52,7 @@ export default class PlansShiftsScreen extends Component {
             <Select selected={{ label: "Brno - recepce" }} items={[{ label: "Brno - recepce" }]} onChange={(item) => console.log("onchange")} />
           </View>
         </View>
-        <Content>
+        <Content style={{backgroundColor: Colors.lightGray}}>
           {items}
         </Content>
         <ModalPopup ref={(ref) => this._modal = ref} onSave={() => this._modal.closeModal()}>

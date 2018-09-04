@@ -78,16 +78,28 @@ export default class MyShiftsScreen extends Component {
   }
 
   getJobsName(id) {
+    if(!this.state.jobs.hasOwnProperty("id" + id)){
+      return "";
+    }
+    
     let job = this.state.jobs["id" + id];
     return job.name
   }
 
   getWorkspaceName(id) {
+    if(!this.state.workplaces.hasOwnProperty("id" + id)){
+      return "";
+    }
+
     let workplace = this.state.workplaces["id" + id];
     return workplace.name
   }
 
   getJobsColor(id) {
+    if(!this.state.jobs.hasOwnProperty("id" + id)){
+      return "#000000";
+    }
+
     let job = this.state.jobs["id" + id];
     return job.color
   }
@@ -129,15 +141,15 @@ export default class MyShiftsScreen extends Component {
       if (items.hasOwnProperty(key)) {
         const shifts = items[key];
         const strTime = this.timeToString(key.replace("d", ""));
-        this.state.shifts[strTime] = [];
+        this.state.shifts[strTime] = [{items: []}];
         for (const key2 in shifts) {
           if (shifts.hasOwnProperty(key2)) {
             const shift = shifts[key2];
-            this.state.shifts[strTime].push({
+            this.state.shifts[strTime][0].items.push({
               position: this.getJobsName(shift.job),
               name: this.getWorkspaceName(shift.wp),
-              timeFrom: shift.start,
-              timeTo: shift.end,
+              timeFrom: shift.clock ? shift.clockIn : shift.start,
+              timeTo:shift.clock ? shift.clockOut : shift.end,
               date: new Date(strTime),
               color: this.getJobsColor(shift.job)
             });
@@ -187,7 +199,7 @@ export default class MyShiftsScreen extends Component {
 
   render() {
     return (
-      <Container>
+      <Container style={{backgroundColor: "gray"}}>
         <OfflineNotice />
         <Calendar
           ref={(ref) => this._calendar = ref}
