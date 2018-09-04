@@ -61,6 +61,7 @@ export default class ModalPopup extends Component {
                 animationType={"fade"}
                 transparent={true}
                 visible={this.state.showModal}
+                supportedOrientations={["portrait" , "portrait-upside-down" , "landscape" , "landscape-left" , "landscape-right"]}
                 onRequestClose={() => this.setState({ showModal: false })}
             >
                 <Container
