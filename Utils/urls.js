@@ -8,5 +8,7 @@ export const UrlsApi = {
     login: "/index.php?o=ajax&ajax=appLogin&a=login",
     jobsAndWorkplaces: "/index.php?o=ajax&ajax=appLoadInfo&a=getWpsAndJobs",
     myShifts: "/index.php?o=ajax&ajax=appLoadInfo&a=loadMyShifts",
-    shifts: "/index.php?o=ajax&ajax=appLoadShiftsForUser&a=loadShifts"
+    shifts: "/index.php?o=ajax&ajax=appLoadShiftsForUser&a=loadShifts",
+    relogin: "/index.php?o=ajax&ajax=appLogin&a=relogin",
+    demoLogin:  "/index.php?o=ajax&ajax=appLogin&a=loginDemo&u=cinemaman",
 }

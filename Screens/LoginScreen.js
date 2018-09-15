@@ -47,26 +47,47 @@ export default class LoginScreen extends Component {
 
     const { name, password, address, isPrivateServer } = this.state;
 
-    this.togleLoadingButton();
+    this.togleLoadingButton(this._loadingButton);
 
     let adresa = isPrivateServer ? address : UrlsApi.base_url;
 
-      Ajax.post(adresa + UrlsApi.login, { name: name, pw: password })
-        .then(response => {
-          var cookies = response.headers.get('set-cookie');         
-          response.json().then(res => {
-            this.togleLoadingButton();
-            if (res.ok == 0) {
-              this.showError(res.message);
-            } else {
-              this.loginOk(res.IDuser, res.username, adresa, cookies);
-            }
-          });
-        })
-        .catch(error => {
-          this.showError(error.message);
-          this.togleLoadingButton();
+    Ajax.post(adresa + UrlsApi.login, { name: name, pw: password })
+      .then(response => {
+        var cookies = response.headers.get('set-cookie');
+        response.json().then(res => {
+          this.togleLoadingButton(this._loadingButton);
+          if (res.ok == 0) {
+            this.showError(res.message);
+          } else {
+            this.loginOk(res.IDuser, res.username, adresa, res.appKey, cookies);
+          }
         });
+      })
+      .catch(error => {
+        this.showError(error.message);
+        this.togleLoadingButton(this._loadingButton);
+      });
+  }
+
+  onPressLoginDemo = () => {
+    this.togleLoadingButton(this._loadingButtonDemo);
+    let adresa = UrlsApi.base_url;
+    Ajax.post(adresa + UrlsApi.demoLogin, {})
+      .then(response => {
+        var cookies = response.headers.get('set-cookie');
+        response.json().then(res => {
+          this.togleLoadingButton(this._loadingButtonDemo);
+          if (res.ok == 0) {
+            this.showError(res.message);
+          } else {
+            this.loginOk(res.IDuser, res.username, adresa, res.appKey, cookies);
+          }
+        });
+      })
+      .catch(error => {
+        this.showError(error.message);
+        this.togleLoadingButton(this._loadingButtonDemo);
+      });
   }
 
   validation() {
@@ -103,20 +124,21 @@ export default class LoginScreen extends Component {
     )
   }
 
-  loginOk(userID, username, address, cookie) {
+  loginOk(userID, username, address, appKey, cookie) {
     DataStore.SetBaseData({
       UserID: userID,
       UserName: username,
       ServerAddress: address,
+      AppKey: appKey,
       Cookie: cookie
     }, () => {
-      this.props.loginOk(userID, username, address, cookie)
+      this.props.loginOk(userID, username, address, appKey, cookie)
     });
   }
 
-  togleLoadingButton() {
-    if (this._loadingButton != null) {
-      this._loadingButton.togleLoading();
+  togleLoadingButton(button) {
+    if (button != null) {
+      button.togleLoading();
     }
   }
 
@@ -159,6 +181,9 @@ export default class LoginScreen extends Component {
               <TouchableOpacity style={{ padding: 10 }} onPress={() => Linking.openURL(UrlsFull.registration)}>
                 <Text style={{ color: Colors.orange }}>Registrovat</Text>
               </TouchableOpacity>
+            </View>
+            <View style={{ padding: 10 }}>
+              <LoadingButton ref={(ref) => this._loadingButtonDemo = ref} small info onPress={this.onPressLoginDemo} style={{ alignSelf: "center" }}><Text>Přihlásit do dema</Text></LoadingButton>
             </View>
           </Form>
         </Content>

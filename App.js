@@ -15,12 +15,16 @@ import platform from './native-base-theme/variables/platform';
 import DataStore from "./Utils/dataStore";
 import SplashScreen from 'react-native-splash-screen'
 import LoadingScreen from "./Screens/LoadingScreen"
+import Ajax from "./Utils/ajax";
+import { UrlsApi } from "./Utils/urls";
+
 
 export default class App extends Component {
   state = {
     address: null,
     userID: null,
     username: null,
+    appKey: null,
     cookie: null,
     loading: true
   }
@@ -37,18 +41,35 @@ export default class App extends Component {
           userID: data.UserID,
           username: data.UserName,
           cookie: data.Cookie,
-          loading: false
-        });
+          appKey: data.AppKey,
+        }, () => this.relogin(this.setState({loading: false})));
       }
     });
   }
 
-  logOut() {
-    this.setState({
-      userID: null,
-      username: null,
-      address: null
-    });
+  relogin(callback = () => null) {
+    const { address, userID, username, appKey } = this.state;
+
+    Ajax.post(address + UrlsApi.relogin, { IDuser: userID, appKey: appKey })
+      .then(response => {
+        var cookie = response.headers.get('set-cookie');
+        response.json().then(res => {
+          if (res.ok == 0) {
+            this.setState({ userID: null, username: null, appKey: null, address: null, cookie: null }, () => callback());
+          } else {
+            DataStore.SetBaseData({
+              UserID: userID,
+              UserName: username,
+              ServerAddress: address,
+              AppKey: appKey,
+              Cookie: cookie
+            }, () =>this.setState({ cookie: cookie }, () => callback()));
+          }
+        });
+      })
+      .catch(error => {
+        callback();
+      });
   }
 
   renderInner() {
@@ -60,8 +81,8 @@ export default class App extends Component {
 
     return (
       this.state.userID == null ?
-        <LoginScreen loginOk={(userID, username, address, cookie) => this.setState({ userID, username, address, cookie })} /> :
-        <Router screenProps={{ logOut: () => this.setState({ userID: null, username: null, address: null }), ...this.state }} />
+        <LoginScreen loginOk={(userID, username, address, appKey, cookie) => this.setState({ userID, username, address, appKey, cookie })} /> :
+        <Router screenProps={{ relogin: (callback) => this.relogin(callback), logOut: () => this.setState({ userID: null, username: null, appKey: null, address: null }), ...this.state }} />
     );
   }
 

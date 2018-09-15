@@ -34,6 +34,13 @@ export default class MyShiftsScreen extends Component {
     Ajax.get(address + UrlsApi.jobsAndWorkplaces, {}, cookie)
       .then(response => response.json())
       .then(response => {
+        if (response.ok == 0) {
+          if (response.loggedOut == 1) {
+            relogin(() => this.loadJobsAndWorkplaces())
+          }
+          return;
+        }
+
         this.setState({
           jobs: response.jobs,
           workplaces: response.wps
@@ -67,6 +74,13 @@ export default class MyShiftsScreen extends Component {
     Ajax.get(address + UrlsApi.shifts, data, cookie)
       .then(response => response.json())
       .then(response => {
+        if (response.ok == 0) {
+          if (response.loggedOut == 1) {
+            relogin(() => this.loadDates())
+          }
+          return;
+        }
+
         this.setState({
           shifts: this.convertShifts(response.shifts, day),
           markedDates: this.convertMarkedDates(response.shifts),

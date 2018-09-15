@@ -26,10 +26,21 @@ export default class HomeScreen extends Component {
   }
 
   componentDidMount() {
-    let { address, cookie } = this.props.navigation.getScreenProps();
+    this.loadData();
+  }
+
+  loadData() {
+    let { address, cookie, relogin } = this.props.navigation.getScreenProps();
     Ajax.get(address + UrlsApi.myShifts, {}, cookie)
       .then(response => response.json())
       .then(response => {
+        if (response.ok == 0) {
+          if (response.loggedOut == 1) {
+            relogin(() => this.loadData())
+          }
+          return;
+        }
+
         let shifts = {};
         response.shifts.map((item, i) => {
           if (!shifts.hasOwnProperty(item.startDate)) {
