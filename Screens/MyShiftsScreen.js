@@ -7,27 +7,31 @@
  */
 
 import React, { Component } from 'react';
-import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { Container, Spinner } from "native-base";
-import { Colors, FontSize } from "../Utils/variables";
+import { Container } from "native-base";
 import Ajax from "./../Utils/ajax";
 import { UrlsApi } from "./../Utils/urls";
-import Divider from "./../Components/Divider";
+import { xdateToData } from "./../Utils/functions";
 import OfflineNotice from "./../Components/OfflineNotice";
 import ShiftListItemFree from "./../Components/ShiftListItemFree";
 import ShiftListItem from "./../Components/ShiftListItem";
 import Calendar from "./../Components/Calendar";
+import DataStore from "./../Utils/dataStore";
+import XDate from 'xdate';
 
 
 export default class MyShiftsScreen extends Component {
-  _calendar = null
-  _selectedDate = new Date()
+  _calendar = null;
+  _selectedDate = new Date();
+  shifts = {};
+
   state = {
     jobs: null,
     workplaces: null,
     markedDates: {},
     shifts: {},
   };
+
+
 
   loadJobsAndWorkplaces(callback) {
     let { address, cookie } = this.props.navigation.getScreenProps();
@@ -47,6 +51,7 @@ export default class MyShiftsScreen extends Component {
         }, () => callback())
       })
       .catch(error => {
+        this.getOfflineData(xdateToData(XDate(true)));
       });
   }
 
@@ -85,23 +90,53 @@ export default class MyShiftsScreen extends Component {
           shifts: this.convertShifts(response.shifts, day),
           markedDates: this.convertMarkedDates(response.shifts),
           refreshing: false
-        });
+        }, () => this.saveOfflineData(response.shifts));
       })
       .catch(error => {
+        this.getOfflineData(day);
       });
   }
 
+  getOfflineData(day) {
+    DataStore.GetMyShift((data) => {
+      if (data == null) {
+        return;
+      }
+
+      this.setState((state, props) => {
+        return {
+          jobs: data.jobs,
+          workplaces: data.workplaces
+        }
+      }
+      );
+
+
+      this.setState({
+        shifts: this.convertShifts(data.shifts, day),
+        markedDates: this.convertMarkedDates(data.shifts),
+        refreshing: false
+      })
+    });
+  }
+
+
+  saveOfflineData(shifts) {
+    this.shifts = { ...shifts, ...this.shifts };
+    DataStore.SetMyShift({ jobs: this.state.jobs, workplaces: this.state.workplaces, shifts: this.shifts }, () => null);
+  }
+
   getJobsName(id) {
-    if(!this.state.jobs.hasOwnProperty("id" + id)){
+    if (!this.state.jobs.hasOwnProperty("id" + id)) {
       return "";
     }
-    
+
     let job = this.state.jobs["id" + id];
     return job.name
   }
 
   getWorkspaceName(id) {
-    if(!this.state.workplaces.hasOwnProperty("id" + id)){
+    if (!this.state.workplaces.hasOwnProperty("id" + id)) {
       return "";
     }
 
@@ -110,7 +145,7 @@ export default class MyShiftsScreen extends Component {
   }
 
   getJobsColor(id) {
-    if(!this.state.jobs.hasOwnProperty("id" + id)){
+    if (!this.state.jobs.hasOwnProperty("id" + id)) {
       return "#000000";
     }
 
@@ -155,7 +190,7 @@ export default class MyShiftsScreen extends Component {
       if (items.hasOwnProperty(key)) {
         const shifts = items[key];
         const strTime = this.timeToString(key.replace("d", ""));
-        this.state.shifts[strTime] = [{items: []}];
+        this.state.shifts[strTime] = [{ items: [] }];
         for (const key2 in shifts) {
           if (shifts.hasOwnProperty(key2)) {
             const shift = shifts[key2];
@@ -163,7 +198,7 @@ export default class MyShiftsScreen extends Component {
               position: this.getJobsName(shift.job),
               name: this.getWorkspaceName(shift.wp),
               timeFrom: shift.clock ? shift.clockIn : shift.start,
-              timeTo:shift.clock ? shift.clockOut : shift.end,
+              timeTo: shift.clock ? shift.clockOut : shift.end,
               date: new Date(strTime),
               color: this.getJobsColor(shift.job)
             });
@@ -200,9 +235,9 @@ export default class MyShiftsScreen extends Component {
     return <ShiftListItemFree item={{ date: day }} />;
   }
 
-  loadOld(){
-    if(this._calendar){
-      this._selectedDate.setDate(this._selectedDate.getDate() - 7); 
+  loadOld() {
+    if (this._calendar) {
+      this._selectedDate.setDate(this._selectedDate.getDate() - 7);
       this.setState({
         refreshing: true
       });
@@ -213,7 +248,7 @@ export default class MyShiftsScreen extends Component {
 
   render() {
     return (
-      <Container style={{backgroundColor: "gray"}}>
+      <Container style={{ backgroundColor: "gray" }}>
         <OfflineNotice />
         <Calendar
           ref={(ref) => this._calendar = ref}

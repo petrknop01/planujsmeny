@@ -1,3 +1,6 @@
+import XDate from 'xdate';
+
+
 export function invertColor(hex, bw) {
     if (hex.indexOf('#') === 0) {
         hex = hex.slice(1);
@@ -33,3 +36,13 @@ function padZero(str, len) {
 }
 
 
+export function xdateToData(xdate) {
+    const dateString = xdate.toString('yyyy-MM-dd');
+    return {
+      year: xdate.getFullYear(),
+      month: xdate.getMonth() + 1,
+      day: xdate.getDate(),
+      timestamp: XDate(dateString, true).getTime(),
+      dateString: dateString
+    };
+  }
