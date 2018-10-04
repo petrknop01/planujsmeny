@@ -40,7 +40,7 @@ export default class LoadingButton extends Component {
                 {...this.props}
                 disabled={isLoading ? true : this.props.disabled}
             >
-                {isLoading ? <Spinner size="small" color="white" /> : this.props.children}
+                {isLoading ? <Spinner size="small" color="white" style={{marginVertical: 5, marginHorizontal: 20}}/> : this.props.children}
             </Button>
         );
     }

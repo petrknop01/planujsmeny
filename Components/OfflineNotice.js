@@ -17,11 +17,28 @@ export default class OfflineNotice extends Component {
     NetInfo.isConnected.removeEventListener('connectionChange', (isConnected) => this.setState({ isConnected }));
   }
 
+  getDate() {
+    if (this.props.date == null) {
+      return null;
+    }
+
+    return (
+      this.isToday(this.props.date) ?
+        (("0" + this.props.date.getHours()).slice(-2) + ":" + ("0" + this.props.date.getMinutes()).slice(-2)) :
+        (this.props.date.getDate() + "." + (this.props.date.getMonth() + 1))
+    )
+  }
+
+  isToday(td) {
+    var d = new Date();
+    return td.getDate() == d.getDate() && td.getMonth() == d.getMonth() && td.getFullYear() == d.getFullYear();
+  }
+
   render() {
     if (!this.state.isConnected) {
       return (
         <View style={{ padding: 3, alignItems: "center", backgroundColor: Colors.header }}>
-          <Text style={{ fontSize: FontSize.small, color: "white", textAlign: "center" }}>Offline</Text>
+          <Text style={{ fontSize: FontSize.small, color: "white", textAlign: "center" }}>Offline {this.getDate()}</Text>
         </View >);
     }
     return null;

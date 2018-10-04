@@ -13,6 +13,7 @@
     "react-native": "0.56.0",
     "react-native-calendars": "^1.20.0",
     "react-native-cookies": "^3.3.0",
+    "react-native-device-info": "^0.22.6",
     "react-native-modal-datetime-picker": "^6.0.0",
     "react-native-splash-screen": "^3.1.1",
     "react-navigation": "^2.11.2"
@@ -27,6 +28,8 @@
     "preset": "react-native"
   },
   "rnpm": {
-    "assets": ["./assets"]
- }
+    "assets": [
+      "./assets"
+    ]
+  }
 }

@@ -23,12 +23,14 @@ export default class MyShiftsScreen extends Component {
   _calendar = null;
   _selectedDate = new Date();
   shifts = {};
+  offline = true;
 
   state = {
     jobs: null,
     workplaces: null,
     markedDates: {},
     shifts: {},
+    date: null,
   };
 
 
@@ -47,7 +49,7 @@ export default class MyShiftsScreen extends Component {
 
         this.setState({
           jobs: response.jobs,
-          workplaces: response.wps
+          workplaces: response.wps,
         }, () => callback())
       })
       .catch(error => {
@@ -98,17 +100,20 @@ export default class MyShiftsScreen extends Component {
   }
 
   getOfflineData(day) {
+    this.offline = true;
+
     DataStore.GetMyShift((data) => {
       if (data == null) {
         return;
       }
 
       this.setState((state, props) => {
-        return {
-          jobs: data.jobs,
-          workplaces: data.workplaces
+          return {
+            jobs: data.jobs,
+            workplaces: data.workplaces,
+            date: new Date(data.savedDate)
+          }
         }
-      }
       );
 
 
@@ -123,7 +128,7 @@ export default class MyShiftsScreen extends Component {
 
   saveOfflineData(shifts) {
     this.shifts = { ...shifts, ...this.shifts };
-    DataStore.SetMyShift({ jobs: this.state.jobs, workplaces: this.state.workplaces, shifts: this.shifts }, () => null);
+    DataStore.SetMyShift({ jobs: this.state.jobs, workplaces: this.state.workplaces, shifts: this.shifts, savedDate: new Date() }, () => null);
   }
 
   getJobsName(id) {
@@ -197,8 +202,11 @@ export default class MyShiftsScreen extends Component {
             this.state.shifts[strTime][0].items.push({
               position: this.getJobsName(shift.job),
               name: this.getWorkspaceName(shift.wp),
-              timeFrom: shift.clock ? shift.clockIn : shift.start,
-              timeTo: shift.clock ? shift.clockOut : shift.end,
+              timeFrom: shift.start,
+              timeTo: shift.end,
+              clockIn: shift.clockIn ,
+              clockOut:shift.clockOut ,
+              isClock: shift.clock,
               date: new Date(strTime),
               color: this.getJobsColor(shift.job)
             });
@@ -213,7 +221,8 @@ export default class MyShiftsScreen extends Component {
   }
 
   loadItems(day) {
-    if (this.state.jobs == null && this.state.workplaces == null) {
+    if ((this.state.jobs == null && this.state.workplaces == null) || this.offline) {
+      this.offline = false;
       this.loadJobsAndWorkplaces(() => this.loadDates(day))
     } else {
       this.loadDates(day)
@@ -241,7 +250,6 @@ export default class MyShiftsScreen extends Component {
       this.setState({
         refreshing: true
       });
-
       this._calendar.selectDate(this._selectedDate);
     }
   }
@@ -249,7 +257,7 @@ export default class MyShiftsScreen extends Component {
   render() {
     return (
       <Container style={{ backgroundColor: "gray" }}>
-        <OfflineNotice />
+        <OfflineNotice date={this.state.date} />
         <Calendar
           ref={(ref) => this._calendar = ref}
           onDayPress={(day) => this._selectedDate = new Date(day.dateString)}

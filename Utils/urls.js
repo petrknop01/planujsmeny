@@ -11,4 +11,9 @@ export const UrlsApi = {
     shifts: "/index.php?o=ajax&ajax=appLoadShiftsForUser&a=loadShifts",
     relogin: "/index.php?o=ajax&ajax=appLogin&a=relogin",
     demoLogin:  "/index.php?o=ajax&ajax=appLogin&a=loginDemo&u=cinemaman",
+    homepage: "/index.php?o=ajax&ajax=appLoadInfo&a=loadAllMainPageInfo",
+    clockIn: "/index.php?o=ajax&ajax=appClockInR&a=clockIn",
+    clockOut: "/index.php?o=ajax&ajax=appClockInR&a=clockOut",
+    clockPause: "/index.php?o=ajax&ajax=appClockInR&a=pauseS",
+    clockResume: "/index.php?o=ajax&ajax=appClockInR&a=pauseE"
 }
