@@ -8,7 +8,7 @@
 
 import React, { Component } from 'react';
 import { View, TouchableOpacity } from "react-native";
-import { Container, Content, Text, Button, Icon, Spinner } from "native-base";
+import { Container, Content, Text, Button, Icon, Spinner, Input } from "native-base";
 import { Colors, FontSize } from "../Utils/variables";
 import Divider from "./../Components/Divider";
 import ShiftListItem from "./../Components/ShiftListItem";
@@ -19,6 +19,8 @@ import Ajax from "./../Utils/ajax";
 import { UrlsApi } from "./../Utils/urls";
 import LoadingButton from "./../Components/LoadingButton";
 import DeviceInfo from 'react-native-device-info';
+import ModalPopup from "./../Components/ModalPopup";
+
 
 const ACTION_TYPE = {
   clockIn: 1,
@@ -29,6 +31,7 @@ const ACTION_TYPE = {
 
 export default class HomeScreen extends Component {
   _loadingButton = null;
+  _lastTypeClock = ACTION_TYPE.clockIn
 
   state = {
     shift: null,
@@ -36,7 +39,7 @@ export default class HomeScreen extends Component {
     currentlyAtWork: [],
     loadingShift: true,
     comment: "",
-    commentDialog: false,
+    commentError: false,
   }
 
   componentDidMount() {
@@ -127,9 +130,15 @@ export default class HomeScreen extends Component {
   }
 
 
-  togleLoadingButton(button) {
+  startLoadingButton(button) {
     if (button != null) {
-      button.togleLoading();
+      button.startLoading();
+    }
+  }
+
+  endLoadingButton(button) {
+    if (button != null) {
+      button.endLoading();
     }
   }
 
@@ -147,28 +156,31 @@ export default class HomeScreen extends Component {
   }
 
 
-  onPressClock(type) {
-    this.togleLoadingButton(this._loadingButton);
+  onPressClockSave(type) {
+    if(type == null){
+      type = this._lastTypeClock;
+    }else{
+      this._lastTypeClock = type;
+    }
+
+    this.startLoadingButton(this._loadingButton);
     let { address, cookie } = this.props.navigation.getScreenProps();
 
-
     this.loadData(() => {
-      if (this.state.clock.reqCom && !this.state.commentDialog) {
-        this.setState({
-          commentDialog: true
-        })
+      if (parseInt(this.state.clock.reqCom) == 1 && this.state.comment == "") {
+        this._modal.showModal();
         return;
       }
 
       let data = {
-        b :"app", 
-        bv : DeviceInfo.getReadableVersion(), 
-        bm :true, 
-        os : DeviceInfo.getSystemName(),
-        osv :DeviceInfo.getSystemVersion()
+        b: "app",
+        bv: DeviceInfo.getReadableVersion(),
+        bm: true,
+        os: DeviceInfo.getSystemName(),
+        osv: DeviceInfo.getSystemVersion()
       }
 
-      if(this.state.commentDialog){
+      if (parseInt(this.state.clock.reqCom) == 1) {
         data["comment"] = this.state.comment;
       }
 
@@ -176,13 +188,46 @@ export default class HomeScreen extends Component {
         .then(response => {
           var cookies = response.headers.get('set-cookie');
           response.json().then(res => {
-            this.togleLoadingButton(this._loadingButton);
+            this.loadData(() => {
+              this.endLoadingButton(this._loadingButton);
+              this._modal.closeModal();
+            });
           });
         })
         .catch(error => {
-          this.togleLoadingButton(this._loadingButton);
+          this.endLoadingButton(this._loadingButton);
+          this._modal.closeModal();
         });
     });
+  }
+
+  getClockType(){
+    return ACTION_TYPE.clockIn
+  }
+
+  renderClockButton(){
+    let result = [];
+    const {clock} = this.state;
+
+    if(clock.clockIn == null){
+      result.push(<LoadingButton key={ACTION_TYPE.clockIn} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.clockIn)}><Text>Clock In</Text></LoadingButton>);
+    }
+
+    if(clock.clockIn != null && (clock.clockIn.pauseStart == null || (clock.clockIn.pauseEnd != null && clock.clockIn.pauseEnd != "0000-00-00 00:00:00"))){
+      result.push(<LoadingButton key={ACTION_TYPE.clockOut} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.clockOut)}><Text>Clock Out</Text></LoadingButton>);
+    }
+
+
+    if(clock.enablePause == 1 && clock.clockIn != null && clock.clockIn.pauseStart != null && clock.clockIn.pauseEnd == "0000-00-00 00:00:00"){
+      result.push(<LoadingButton key={ACTION_TYPE.pauseIn} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseIn)}><Text>Pause start</Text></LoadingButton>);
+    }
+
+
+    if(clock.enablePause == 1 && clock.clockIn != null  && clock.clockIn.pauseStart != null && clock.clockIn.pauseEnd == "0000-00-00 00:00:00"){
+      result.push(<LoadingButton key={ACTION_TYPE.pauseOut} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseOut)}><Text>Pause end</Text></LoadingButton>);
+    }
+
+    return result;
   }
 
   renderClock() {
@@ -196,7 +241,7 @@ export default class HomeScreen extends Component {
       <View style={{ padding: 5, flexDirection: "row", alignItems: "center", backgroundColor: "white" }}>
         <Text style={{ fontSize: FontSize.extra, fontWeight: "bold", width: 150 }}>{(("0" + time.getHours()).slice(-2) + ":" + ("0" + time.getMinutes()).slice(-2))}</Text>
         <View style={{ flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", flexWrap: "wrap" }}>
-          <LoadingButton ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClock(ACTION_TYPE.clockIn)}><Text>Clock In</Text></LoadingButton>
+          {this.renderClockButton()}
           {/* <Button small style={{marginLeft: 10, marginTop: 10, alignSelf: "flex-end"}}><Text>V práci</Text></Button> */}
         </View>
       </View>
@@ -213,7 +258,7 @@ export default class HomeScreen extends Component {
     return (
       <Container>
         <OfflineNotice />
-        <Content style={{ backgroundColor: Colors.lightGray }}>
+         <Content style={{ backgroundColor: Colors.lightGray }}>
           {this.renderClock()}
           <View>
             <Divider title="Nejbližší směny" />
@@ -241,7 +286,32 @@ export default class HomeScreen extends Component {
               {this.renderPerson()}
             </View>
           </View>
-        </Content>
+        </Content> 
+        <ModalPopup
+          ref={(ref) => this._modal = ref}
+          onSave={() => {
+            this.onPressClockSave(null);
+            this.endLoadingButton();
+          }} 
+          onClose={() => {
+            this.setState({
+              comment: "",
+              commentError: true,
+            });
+          }}>
+          <View>
+            <View style={{ height: 100 }}>
+              <Input 
+                style={{ flex: 1 }} 
+                error={this.state.commentError} 
+                value={this.state.comment} 
+                placeholder="Komentář" 
+                onChangeText={(comment) => this.setState({ comment, commentError: comment == "" })} 
+                multiline={true} 
+              />
+            </View>
+          </View>
+        </ModalPopup>
       </Container>
     );
   }

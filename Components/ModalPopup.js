@@ -45,7 +45,11 @@ export default class ModalPopup extends Component {
 
         this.setState({
             showModal: false
-        })
+        });
+
+        if(this.props.onClose){
+            this.props.onClose();
+        }
     }
 
     onPressSave() {
