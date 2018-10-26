@@ -25,6 +25,10 @@ export default class InputTime extends Component {
 
     handleDatePicked = (date) => {
         this.hideDateTimePicker();
+        let time = ((date.getHours()) < 10 ? "0" : "") + (date.getHours()) + ":" +
+                    ((date.getMinutes()) < 10 ? "0" : "") + (date.getMinutes());
+
+        this.props.onChange(time);
     };
 
     render() {
@@ -38,8 +42,11 @@ export default class InputTime extends Component {
                     flex: 1,
                     fontSize: variable.inputFontSize,
                     backgroundColor: "#EEE",
-                    borderRadius: variable.borderRadiusBase
+                    borderRadius: variable.borderRadiusBase,
+                    justifyContent: "center",
+                    alignItems: "center"
                 }}>
+                <Text>{this.props.value}</Text>
                 </TouchableOpacity>
                 <DateTimePicker
                     isVisible={this.state.isDateTimePickerVisible}
@@ -50,6 +57,9 @@ export default class InputTime extends Component {
                     titleIOS="Vyberte čas"
                     datePickerModeAndroid="spinner"
                     mode="time"
+                    is24Hour={true}
+                    locale="cs"
+                    date={new Date("1995-12-17T" + this.props.value + ":00")}
                 />
             </View>
         );

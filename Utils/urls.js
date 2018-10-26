@@ -15,5 +15,9 @@ export const UrlsApi = {
     clockIn: "/index.php?o=ajax&ajax=appClockInR&a=clockIn",
     clockOut: "/index.php?o=ajax&ajax=appClockInR&a=clockOut",
     clockPause: "/index.php?o=ajax&ajax=appClockInR&a=pauseS",
-    clockResume: "/index.php?o=ajax&ajax=appClockInR&a=pauseE"
+    clockResume: "/index.php?o=ajax&ajax=appClockInR&a=pauseE",
+    myTimes: "/index.php?o=ajax&ajax=appLoadAvailsForUser&a=loadAvails",
+    myTimesAdd: "/index.php?o=ajax&ajax=appAvailability&a=addAvail",
+    myTimesEdit: "/index.php?o=ajax&ajax=appAvailability&a=editAvail",
+
 }

@@ -283,18 +283,18 @@ export default class HomeScreen extends Component {
     const { clock } = this.state;
 
     if (clock.clockIn == null) {
-      result.push(<View style={{ paddingTop: 10 }}><LoadingButton key={ACTION_TYPE.clockIn} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.clockIn, true)}><Text>Clock In</Text></LoadingButton></View>);
+      result.push(<View key={1}><LoadingButton key={ACTION_TYPE.clockIn} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.clockIn, true)}><Text>Clock In</Text></LoadingButton></View>);
     }
 
     if (clock.clockIn != null && (clock.clockIn.pauseStart == null || (clock.clockIn.pauseEnd != null && clock.clockIn.pauseEnd != "0000-00-00 00:00:00"))) {
-      result.push(<View><LoadingButton danger key={ACTION_TYPE.clockOut} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.clockOut, true)}><Text>Clock Out</Text></LoadingButton></View>);
+      result.push(<View key={2}><LoadingButton danger key={ACTION_TYPE.clockOut} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.clockOut, true)}><Text>Clock Out</Text></LoadingButton></View>);
     }
 
 
     if (parseInt(clock.enablePause) == 1 && clock.clockIn != null && clock.clockIn.pauseStart != null && clock.clockIn.pauseEnd == "0000-00-00 00:00:00") {
-      result.push(<View><LoadingButton  key={ACTION_TYPE.pauseOut} ref={(ref) => this._loadingButtonPause = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseOut, true)}><Text>Pause end</Text></LoadingButton></View>);
+      result.push(<View key={3}><LoadingButton  key={ACTION_TYPE.pauseOut} ref={(ref) => this._loadingButtonPause = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseOut, true)}><Text>Pause end</Text></LoadingButton></View>);
     } else if (parseInt(clock.enablePause) == 1 && clock.clockIn != null) {
-      result.push(<View style={{ paddingLeft: 10 }}><LoadingButton key={ACTION_TYPE.pauseIn} ref={(ref) => this._loadingButtonPause = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseIn, true)}><Text>Pause start</Text></LoadingButton></View>);
+      result.push(<View key={4} style={{ paddingLeft: 10 }}><LoadingButton key={ACTION_TYPE.pauseIn} ref={(ref) => this._loadingButtonPause = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseIn, true)}><Text>Pause start</Text></LoadingButton></View>);
     }
 
     return result;

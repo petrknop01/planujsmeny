@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 import { Container } from "native-base";
 import Ajax from "./../Utils/ajax";
 import { UrlsApi } from "./../Utils/urls";
-import { xdateToData } from "./../Utils/functions";
+import { xdateToData, calculateDate } from "./../Utils/functions";
 import OfflineNotice from "./../Components/OfflineNotice";
 import ShiftListItemFree from "./../Components/ShiftListItemFree";
 import ShiftListItem from "./../Components/ShiftListItem";
@@ -36,7 +36,7 @@ export default class MyShiftsScreen extends Component {
 
 
   loadJobsAndWorkplaces(callback) {
-    let { address, cookie } = this.props.navigation.getScreenProps();
+    let { address, cookie, relogin } = this.props.navigation.getScreenProps();
     Ajax.get(address + UrlsApi.jobsAndWorkplaces, {}, cookie)
       .then(response => response.json())
       .then(response => {
@@ -58,32 +58,21 @@ export default class MyShiftsScreen extends Component {
   }
 
 
-  calculateDate(day, addMonths) {
-    let date = new Date(day);
-    date.setMonth(date.getMonth() + addMonths);
-
-    return (
-      date.getFullYear() + "-" +
-      ((date.getMonth() + 1) < 10 ? "0" : "") + (date.getMonth() + 1) + "-" +
-      date.getDate()
-    );
-  }
-
 
   loadDates(day) {
     let date = new Date(day.dateString);
     let data = {
-      from: this.calculateDate(day.dateString, -1),
-      to: this.calculateDate(day.dateString, +1)
+      from: calculateDate(day.dateString, -1),
+      to: calculateDate(day.dateString, +1)
     }
 
-    let { address, cookie } = this.props.navigation.getScreenProps();
+    let { address, cookie, relogin } = this.props.navigation.getScreenProps();
     Ajax.get(address + UrlsApi.shifts, data, cookie)
       .then(response => response.json())
       .then(response => {
         if (response.ok == 0) {
           if (response.loggedOut == 1) {
-            relogin(() => this.loadDates())
+            relogin(() => this.loadDates(day))
           }
           return;
         }

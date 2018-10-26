@@ -21,16 +21,19 @@ export default function MyTimesListItem(props) {
                 // shadowOpacity: 0.2,
                 overflow: "hidden",
                 backgroundColor: "white",
+                alignItems: "center",
                 marginBottom: 10,
-                flex: 1,
                 padding: 10,
+                flex: 1,
+                flexDirection: "row"
             }}>
                 <View>
                     <Text style={{ color: Colors.gray, fontWeight: "bold" }} numberOfLines={1} ellipsizeMode="tail" >Nezadáno</Text>
                 </View>
+                {props.edit ?
                 <View style={{paddingTop: 5, flex: 1}}>
                     <Button small success onPress={() => props.onPress(props.item)} style={{alignSelf: "flex-end"}}><Text>Přidat</Text></Button>
-                </View>
+                </View> : null}
             </View>
         </View >
     )
