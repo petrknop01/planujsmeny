@@ -23,7 +23,7 @@ export default class LoadingButton extends Component {
 
     endLoading() {
         this.setState({
-            isLoading: true
+            isLoading: false
         });
     }
 

@@ -10,7 +10,12 @@ export default class OfflineNotice extends Component {
 
   componentDidMount() {
     NetInfo.isConnected.fetch().then((isConnected) => this.setState({ isConnected }));
-    NetInfo.isConnected.addEventListener('connectionChange', (isConnected) => this.setState({ isConnected }));
+    NetInfo.isConnected.addEventListener('connectionChange', (isConnected) => {
+      this.setState({ isConnected })
+      if(this.props.onConectionChange){
+        this.props.onConectionChange(isConnected);
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -21,11 +26,12 @@ export default class OfflineNotice extends Component {
     if (this.props.date == null) {
       return null;
     }
+    let date = new Date(this.props.date);
 
     return (
-      this.isToday(this.props.date) ?
-        (("0" + this.props.date.getHours()).slice(-2) + ":" + ("0" + this.props.date.getMinutes()).slice(-2)) :
-        (this.props.date.getDate() + "." + (this.props.date.getMonth() + 1))
+      this.isToday(date) ?
+        (("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2)) :
+        (date.getDate() + "." + (date.getMonth() + 1))
     )
   }
 

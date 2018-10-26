@@ -132,7 +132,7 @@ export default class MyShiftsScreen extends Component {
   }
 
   getJobsName(id) {
-    if (!this.state.jobs.hasOwnProperty("id" + id)) {
+    if (!this.state.jobs || !this.state.jobs.hasOwnProperty("id" + id)) {
       return "";
     }
 
@@ -141,7 +141,7 @@ export default class MyShiftsScreen extends Component {
   }
 
   getWorkspaceName(id) {
-    if (!this.state.workplaces.hasOwnProperty("id" + id)) {
+    if (!this.state.workplaces || !this.state.workplaces.hasOwnProperty("id" + id)) {
       return "";
     }
 
@@ -257,7 +257,14 @@ export default class MyShiftsScreen extends Component {
   render() {
     return (
       <Container style={{ backgroundColor: "gray" }}>
-        <OfflineNotice date={this.state.date} />
+        <OfflineNotice 
+          date={this.state.date} 
+          onConectionChange={(isConnected) => {
+            if(isConnected){
+              this.loadItems(xdateToData(XDate(true)));
+            }
+          }
+        }/>
         <Calendar
           ref={(ref) => this._calendar = ref}
           onDayPress={(day) => this._selectedDate = new Date(day.dateString)}

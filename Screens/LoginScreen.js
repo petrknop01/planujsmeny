@@ -72,8 +72,10 @@ export default class LoginScreen extends Component {
   onPressLoginDemo = () => {
     this.togleLoadingButton(this._loadingButtonDemo);
     let adresa = UrlsApi.base_url;
-    Ajax.post(adresa + UrlsApi.demoLogin, {})
+    console.log("testLogin");
+    Ajax.post(adresa + UrlsApi.demoLogin, {name: "test", pw: "test" }) 
       .then(response => {
+        console.log("login");
         var cookies = response.headers.get('set-cookie');
         response.json().then(res => {
           this.togleLoadingButton(this._loadingButtonDemo);

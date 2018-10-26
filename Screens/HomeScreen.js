@@ -7,7 +7,7 @@
  */
 
 import React, { Component } from 'react';
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Alert } from "react-native";
 import { Container, Content, Text, Button, Icon, Spinner, Input } from "native-base";
 import { Colors, FontSize } from "../Utils/variables";
 import Divider from "./../Components/Divider";
@@ -20,7 +20,7 @@ import { UrlsApi } from "./../Utils/urls";
 import LoadingButton from "./../Components/LoadingButton";
 import DeviceInfo from 'react-native-device-info';
 import ModalPopup from "./../Components/ModalPopup";
-
+import DataStore from "./../Utils/dataStore";
 
 const ACTION_TYPE = {
   clockIn: 1,
@@ -31,15 +31,20 @@ const ACTION_TYPE = {
 
 export default class HomeScreen extends Component {
   _loadingButton = null;
+  _loadingButtonPause = null;
   _lastTypeClock = ACTION_TYPE.clockIn
 
   state = {
     shift: null,
     shiftRequirements: {},
     currentlyAtWork: [],
-    loadingShift: true,
+    loading: true,
     comment: "",
     commentError: false,
+    offline: false,
+    savedDate: null,
+    wpNames: {},
+    error: []
   }
 
   componentDidMount() {
@@ -57,37 +62,60 @@ export default class HomeScreen extends Component {
           }
           return;
         }
-
-        let shifts = null;
-        response.shifts.map((item, i) => {
-          if (shifts == null) {
-            shifts = {};
-          }
-
-          if (!shifts.hasOwnProperty(item.startDate)) {
-            shifts[item.startDate] = [{ items: [] }];
-          }
-
-          shifts[item.startDate][0].items.push({
-            name: item.wpName,
-            position: item.name,
-            date: new Date(item.startDate),
-            timeFrom: item.startTime,
-            timeTo: item.endTime,
-            color: item.color
-          });
-        });
-
+        response["savedDate"] = new Date() + "";
+        DataStore.SetHome(response, () => null);
+        this.setData(response, callback)
         this.setState({
-          shift: shifts,
-          clock: response.clockInfo.clockInInfo,
-          shiftRequirements: response.shiftRequirements,
-          currentlyAtWork: response.currentlyAtWork,
-          loadingShift: false
-        }, () => callback ? callback() : null)
+          offline: false
+        });
       })
       .catch(error => {
+        DataStore.GetHome((data) => {
+          if (data == null) {
+            this.setState({
+              loading: false
+            })
+            return;
+          }
+
+          this.setData(data, callback)
+          this.setState({
+            offline: true
+          });
+        })
       });
+  }
+
+  setData(response, callback) {
+    let shifts = null;
+    response.shifts.map((item, i) => {
+      if (shifts == null) {
+        shifts = {};
+      }
+
+      if (!shifts.hasOwnProperty(item.startDate)) {
+        shifts[item.startDate] = [{ items: [] }];
+      }
+
+      shifts[item.startDate][0].items.push({
+        name: item.wpName,
+        position: item.name,
+        date: new Date(item.startDate),
+        timeFrom: item.startTime,
+        timeTo: item.endTime,
+        color: item.color
+      });
+    });
+
+    this.setState({
+      shift: shifts,
+      clock: response.clockInfo.clockInInfo,
+      shiftRequirements: response.shiftRequirements,
+      currentlyAtWork: response.currentlyAtWork,
+      loading: false,
+      savedDate: response.savedDate,
+      wpNames: response.wpNames
+    }, () => callback ? callback() : null)
   }
 
   renderPerson() {
@@ -98,13 +126,26 @@ export default class HomeScreen extends Component {
     let items = [];
     for (const key in this.state.currentlyAtWork) {
       if (this.state.currentlyAtWork.hasOwnProperty(key)) {
+        let id = key.replace("wp", "id");
+        let wp = {};
+        if (this.state.wpNames.hasOwnProperty(id)) {
+          wp = this.state.wpNames[id];
+        }
+        let personItem = []
         const element = this.state.currentlyAtWork[key];
         for (const key2 in element) {
           const element2 = element[key2];
-          items.push(<PersonListItem
-            key={key}
+          personItem.push(<PersonListItem
+            key={key2}
             item={element2} />);
         }
+
+        items.push(
+          <View key={key} style={{ margin: 10, borderRadius: 5, backgroundColor: "white", overflow: "hidden" }}>
+            <Text style={{ fontWeight: "bold", borderTopLeftRadius: 5, borderTopRightRadius: 5, backgroundColor: "black", padding: 10, color: "white" }}>{wp.name}</Text>
+            {personItem}
+          </View>
+        );
       }
     }
 
@@ -136,9 +177,14 @@ export default class HomeScreen extends Component {
     }
   }
 
-  endLoadingButton(button) {
-    if (button != null) {
-      button.endLoading();
+  endLoadingButton() {
+    if (this._loadingButton != null) {
+      this._loadingButton.endLoading();
+    }
+
+
+    if (this._loadingButtonPause != null) {
+      this._loadingButtonPause.endLoading();
     }
   }
 
@@ -155,101 +201,127 @@ export default class HomeScreen extends Component {
     }
   }
 
+  showAlert(message) {
+    Alert.alert(
+      "Info",
+      message,
+      [
+        { text: 'Zrušit', onPress: () => { }, style: 'cancel' },
+      ],
+      { cancelable: false }
+    )
+  }
 
-  onPressClockSave(type) {
-    if(type == null){
+  onPressClockSave(type, showloadingButton) {
+    if (type == null) {
       type = this._lastTypeClock;
-    }else{
+    } else {
       this._lastTypeClock = type;
     }
 
-    this.startLoadingButton(this._loadingButton);
+    if (showloadingButton) {
+      if (type == ACTION_TYPE.pauseIn || type == ACTION_TYPE.pauseOut) {
+        this.startLoadingButton(this._loadingButtonPause);
+      } else {
+        this.startLoadingButton(this._loadingButton);
+      }
+    }
     let { address, cookie } = this.props.navigation.getScreenProps();
 
     this.loadData(() => {
-      if (parseInt(this.state.clock.reqCom) == 1 && this.state.comment == "") {
-        this._modal.showModal();
-        return;
-      }
-
       let data = {
         b: "app",
         bv: DeviceInfo.getReadableVersion(),
         bm: true,
         os: DeviceInfo.getSystemName(),
-        osv: DeviceInfo.getSystemVersion()
+        osv: DeviceInfo.getSystemVersion(),
       }
 
-      if (parseInt(this.state.clock.reqCom) == 1) {
+      if (parseInt(this.state.clock.reqCom) == 1 && this.state.comment != "") {
         data["comment"] = this.state.comment;
       }
 
       Ajax.post(address + this.getUrl(type), data, cookie)
         .then(response => {
-          var cookies = response.headers.get('set-cookie');
           response.json().then(res => {
+            if (res.action == "fillComment") {
+              this.setState({
+                error: res.infoMessages
+              }, () => {
+                this.endLoadingButton();
+                this._modal.showModal();
+              })
+              return;
+            }
+
             this.loadData(() => {
-              this.endLoadingButton(this._loadingButton);
-              this._modal.closeModal();
+              this.endLoadingButton();
+              this._modal.closeModal(() =>
+                setTimeout(() => {
+                  if (res.infoMessages[0]) {
+                    this.showAlert(res.infoMessages[0][1]);
+                  }
+                }, 250)
+
+              );
             });
           });
         })
         .catch(error => {
-          this.endLoadingButton(this._loadingButton);
+          this.endLoadingButton();
           this._modal.closeModal();
         });
     });
   }
 
-  getClockType(){
+  getClockType() {
     return ACTION_TYPE.clockIn
   }
 
-  renderClockButton(){
+  renderClockButton() {
     let result = [];
-    const {clock} = this.state;
+    const { clock } = this.state;
 
-    if(clock.clockIn == null){
-      result.push(<LoadingButton key={ACTION_TYPE.clockIn} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.clockIn)}><Text>Clock In</Text></LoadingButton>);
+    if (clock.clockIn == null) {
+      result.push(<View style={{ paddingTop: 10 }}><LoadingButton key={ACTION_TYPE.clockIn} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.clockIn, true)}><Text>Clock In</Text></LoadingButton></View>);
     }
 
-    if(clock.clockIn != null && (clock.clockIn.pauseStart == null || (clock.clockIn.pauseEnd != null && clock.clockIn.pauseEnd != "0000-00-00 00:00:00"))){
-      result.push(<LoadingButton key={ACTION_TYPE.clockOut} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.clockOut)}><Text>Clock Out</Text></LoadingButton>);
-    }
-
-
-    if(clock.enablePause == 1 && clock.clockIn != null && clock.clockIn.pauseStart != null && clock.clockIn.pauseEnd == "0000-00-00 00:00:00"){
-      result.push(<LoadingButton key={ACTION_TYPE.pauseIn} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseIn)}><Text>Pause start</Text></LoadingButton>);
+    if (clock.clockIn != null && (clock.clockIn.pauseStart == null || (clock.clockIn.pauseEnd != null && clock.clockIn.pauseEnd != "0000-00-00 00:00:00"))) {
+      result.push(<View><LoadingButton danger key={ACTION_TYPE.clockOut} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.clockOut, true)}><Text>Clock Out</Text></LoadingButton></View>);
     }
 
 
-    if(clock.enablePause == 1 && clock.clockIn != null  && clock.clockIn.pauseStart != null && clock.clockIn.pauseEnd == "0000-00-00 00:00:00"){
-      result.push(<LoadingButton key={ACTION_TYPE.pauseOut} ref={(ref) => this._loadingButton = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseOut)}><Text>Pause end</Text></LoadingButton>);
+    if (parseInt(clock.enablePause) == 1 && clock.clockIn != null && clock.clockIn.pauseStart != null && clock.clockIn.pauseEnd == "0000-00-00 00:00:00") {
+      result.push(<View><LoadingButton  key={ACTION_TYPE.pauseOut} ref={(ref) => this._loadingButtonPause = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseOut, true)}><Text>Pause end</Text></LoadingButton></View>);
+    } else if (parseInt(clock.enablePause) == 1 && clock.clockIn != null) {
+      result.push(<View style={{ paddingLeft: 10 }}><LoadingButton key={ACTION_TYPE.pauseIn} ref={(ref) => this._loadingButtonPause = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseIn, true)}><Text>Pause start</Text></LoadingButton></View>);
     }
 
     return result;
   }
 
   renderClock() {
-    if (!this.state.clock.enabled) {
+    if (!this.state.clock ||
+      parseInt(this.state.clock.enabled) == 0 ||
+      this.state.offline) {
       return null;
     }
 
-    let time = new Date(this.state.clock.actualTime);
+    let splitTime = this.state.clock.actualTime.split(" ")[1].split(":");
+    let time = splitTime[0] + ":" + splitTime[1];
 
     return (
       <View style={{ padding: 5, flexDirection: "row", alignItems: "center", backgroundColor: "white" }}>
-        <Text style={{ fontSize: FontSize.extra, fontWeight: "bold", width: 150 }}>{(("0" + time.getHours()).slice(-2) + ":" + ("0" + time.getMinutes()).slice(-2))}</Text>
+        <Text style={{ fontSize: FontSize.extra, fontWeight: "bold", width: 150 }}>{time}</Text>
         <View style={{ flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", flexWrap: "wrap" }}>
           {this.renderClockButton()}
-          {/* <Button small style={{marginLeft: 10, marginTop: 10, alignSelf: "flex-end"}}><Text>V práci</Text></Button> */}
         </View>
       </View>
     );
   }
 
   render() {
-    if (this.state.loadingShift) {
+    if (this.state.loading) {
       return (
         <Spinner size="large" />
       )
@@ -257,8 +329,18 @@ export default class HomeScreen extends Component {
 
     return (
       <Container>
-        <OfflineNotice />
-         <Content style={{ backgroundColor: Colors.lightGray }}>
+        <OfflineNotice
+          date={this.state.savedDate}
+          onConectionChange={(isConnected) => {
+            if (isConnected) {
+              this.loadData();
+            }
+            this.setState({
+              offline: !isConnected
+            });
+          }
+          } />
+        <Content style={{ backgroundColor: Colors.lightGray }}>
           {this.renderClock()}
           <View>
             <Divider title="Nejbližší směny" />
@@ -286,28 +368,32 @@ export default class HomeScreen extends Component {
               {this.renderPerson()}
             </View>
           </View>
-        </Content> 
+        </Content>
         <ModalPopup
           ref={(ref) => this._modal = ref}
           onSave={() => {
-            this.onPressClockSave(null);
+            this.onPressClockSave(null, false);
             this.endLoadingButton();
-          }} 
+          }}
           onClose={() => {
+            this.endLoadingButton();
             this.setState({
               comment: "",
               commentError: true,
             });
           }}>
           <View>
+            <View>
+              {this.state.error.map((item, i) => <Text key={i} style={{ color: Colors.red, paddingBottom: 10, textAlign: "center" }}>{item[1]}</Text>)}
+            </View>
             <View style={{ height: 100 }}>
-              <Input 
-                style={{ flex: 1 }} 
-                error={this.state.commentError} 
-                value={this.state.comment} 
-                placeholder="Komentář" 
-                onChangeText={(comment) => this.setState({ comment, commentError: comment == "" })} 
-                multiline={true} 
+              <Input
+                style={{ flex: 1 }}
+                error={this.state.commentError}
+                value={this.state.comment}
+                placeholder="Komentář"
+                onChangeText={(comment) => this.setState({ comment, commentError: comment == "" })}
+                multiline={true}
               />
             </View>
           </View>

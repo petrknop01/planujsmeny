@@ -1,0 +1,191 @@
+All of possible info states:
+not enabled ("enabled": "0")
+    {
+    "clockInInfo": {
+        "enabled": "0",
+        "enablePause": "0",
+        "actualTime": "2018-09-23 20:19:27"
+    }
+}
+        - if "enabled" == 0 --> do not show clockIn bar
+enabled ("enabled": "1")
+        - if "enabled" == 1 --> show clockIn bar
+  not clocked in, no shift ("clockIn" = null && "ongoingShift": null,
+"soonShift":null)
+    {
+    "clockInInfo": {
+        "enabled": "1",
+        "reqCom": "0",
+        "enablePause": "0",
+        "actualTime": "2018-09-23 20:15:21",
+        "ongoingShift": null,
+        "soonShift": null,
+        "clockComputerCheckAgreed": 1
+    }
+}
+        - if "reqCom" == 0 --> let user clockIn
+        - if "reqCom" == 1 --> display textArea for comment and let user clockIn
+    not clocked in, shift soon ("soonShift" != null)
+    {
+    "clockInInfo": {
+        "enabled": "1",
+        "reqCom": "0",
+        "enablePause": "0",
+        "actualTime": "2018-09-23 20:22:39",
+        "ongoingShift": null,
+        "soonShift": {
+            "IDshift": "6187",
+            "IDwp": "675",
+            "IDjob": "56",
+            "startTime": "21:00:00",
+            "length": "450",
+            "startDate": "2018-09-23",
+            "wpName": "Test1",
+            "jobName": "Mana\u017eer",
+            "shiftEnd": "04:30"
+        },
+        "clockComputerCheckAgreed": 1
+    }
+}
+        --> let user clockIn
+    not clocked in, shift ongoing ("ongoingShift" != null)
+    {
+    "clockInInfo": {
+        "enabled": "1",
+        "reqCom": "0",
+        "enablePause": "0",
+        "actualTime": "2018-09-23 20:23:29",
+        "ongoingShift": {
+            "IDshift": "6187",
+            "IDwp": "675",
+            "IDjob": "56",
+            "startTime": "18:00:00",
+            "length": "630",
+            "startDate": "2018-09-23",
+            "wpName": "Test1",
+            "jobName": "Mana\u017eer",
+            "shiftEnd": "04:30"
+        },
+        "clockComputerCheckAgreed": 1
+    }
+}
+        --> let user clockIn
+  clocked in ("clockIn" != null && ("pauseStart" == null || ("pauseEnd" != null && "pauseEnd" != "0000-00-00 00:00:00") ))
+    no shift ("clockIn"."IDshift" == 0) // shift ("clockIn"."IDshift" != 0)
+    {
+    "clockInInfo": {
+        "enabled": "1",
+        "reqCom": "0",
+        "enablePause": "0",
+        "actualTime": "2018-09-23 20:20:26",
+        "clockIn": {
+            "IDclock": "126",
+            "status": "0",
+            "IDshift": "0",
+            "clockIn": "2018-09-23 20:20:22",
+            "clockOut": "0000-00-00 00:00:00",
+            "shiftStart": null,
+            "shiftEnd": null,
+            "pauseStart": null,
+            "pauseEnd": null,
+            "wpName": null,
+            "jobName": "jobName"
+        },
+        "ongoingShift": null,
+        "clockComputerCheckAgreed": 1
+    }
+}
+    {
+    "clockInInfo": {
+        "enabled": "1",
+        "reqCom": "1",
+        "enablePause": "0",
+        "actualTime": "2018-09-23 21:54:53",
+        "clockIn": {
+            "IDclock": "129",
+            "status": "0",
+            "IDshift": "6187",
+            "clockIn": "2018-09-23 21:54:49",
+            "clockOut": "0000-00-00 00:00:00",
+            "shiftStart": "2018-09-23 18:00:00",
+            "shiftEnd": "2018-09-24 01:00:00",
+            "pauseStart": null,
+            "pauseEnd": null,
+            "wpName": "Test1",
+            "jobName": "Mana\u017eer"
+        },
+        "clockComputerCheckAgreed": 1
+    }
+}
+        - if "enablePause" == 0 --> let user clockOut
+        - if "enablePause" == 1 --> let user do both - start pause or clockOut
+  clocked on pause ("clockIn" != null && "pauseStart" != null && "pauseEnd" == "0000-00-00 00:00:00")
+    {
+    "clockInInfo": {
+        "enabled": "1",
+        "reqCom": "0",
+        "enablePause": "1",
+        "actualTime": "2018-09-23 21:16:50",
+        "clockIn": {
+            "IDclock": "127",
+            "status": "1",
+            "IDshift": "6187",
+            "clockIn": "2018-09-23 21:09:36",
+            "clockOut": "0000-00-00 00:00:00",
+            "shiftStart": "2018-09-23 18:00:00",
+            "shiftEnd": "2018-09-24 01:00:00",
+            "pauseStart": "2018-09-23 21:12:00",
+            "pauseEnd": "0000-00-00 00:00:00",
+            "wpName": "Test1",
+            "jobName": "Mana\u017eer"
+        },
+        "clockComputerCheckAgreed": 1
+    }
+}
+        --> let user end pause
+  clocked in, after pause (the same as basic clocked in)
+    {
+    "clockInInfo": {
+        "enabled": "1",
+        "reqCom": "0",
+        "enablePause": "1",
+        "actualTime": "2018-09-23 21:18:17",
+        "clockIn": {
+            "IDclock": "127",
+            "status": "0",
+            "IDshift": "6187",
+            "clockIn": "2018-09-23 21:09:36",
+            "clockOut": "0000-00-00 00:00:00",
+            "shiftStart": "2018-09-23 18:00:00",
+            "shiftEnd": "2018-09-24 01:00:00",
+            "pauseStart": "2018-09-23 21:12:00",
+            "pauseEnd": "2018-09-23 21:18:12",
+            "wpName": "Test1",
+            "jobName": "Mana\u017eer"
+        },
+        "clockComputerCheckAgreed": 1
+    }
+}
+  clocked in, on second pause (the same as clocked on pause)
+    {
+    "clockInInfo": {
+        "enabled": "1",
+        "reqCom": "0",
+        "enablePause": "1",
+        "actualTime": "2018-09-23 21:19:05",
+        "clockIn": {
+            "IDclock": "127",
+            "status": "1",
+            "IDshift": "6187",
+            "clockIn": "2018-09-23 21:09:36",
+            "clockOut": "0000-00-00 00:00:00",
+            "shiftStart": "2018-09-23 18:00:00",
+            "shiftEnd": "2018-09-24 01:00:00",
+            "pauseStart": "2018-09-23 21:18:00",
+            "pauseEnd": "0000-00-00 00:00:00",
+            "wpName": "Test1",
+            "jobName": "Mana\u017eer"
+        },
+        "clockComputerCheckAgreed": 1
+    }
+}

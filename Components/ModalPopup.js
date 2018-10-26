@@ -36,15 +36,22 @@ export default class ModalPopup extends Component {
         this.setState({
             showModal: true
         });
+        if (this._loadingButton != null) {
+            this._loadingButton.endLoading();
+        }
     }
 
-    closeModal() {
+    closeModal(callback) {
         if (this._loadingButton != null) {
             this._loadingButton.togleLoading();
         }
 
         this.setState({
             showModal: false
+        }, () => {
+            if(callback){
+                callback();
+            }
         });
 
         if(this.props.onClose){
