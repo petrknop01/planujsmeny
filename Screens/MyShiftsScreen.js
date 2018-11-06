@@ -37,6 +37,7 @@ export default class MyShiftsScreen extends Component {
       workplaces: null,
       markedDates: {},
       shifts: {},
+      offline: false,
       date: null,
     };
   }
@@ -274,9 +275,13 @@ export default class MyShiftsScreen extends Component {
             if(isConnected){
               this.loadItems(xdateToData(XDate(true)));
             }
+
+            this.setState({
+              offline: !isConnected
+            });
           }
         }/>
-        <UserSelect onChange={(item) => this.setState({selectedUserId: item.id}, () => this.reloadData())}/>
+        <UserSelect disabled={this.state.offline} onChange={(item) => this.setState({selectedUserId: item.id}, () => this.reloadData())}/>
         <Calendar
           ref={(ref) => this._calendar = ref}
           onDayPress={(day) => this._selectedDate = new Date(day.dateString)}

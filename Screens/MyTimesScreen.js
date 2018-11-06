@@ -434,7 +434,7 @@ export default class MyTimesScreen extends Component {
             });
           }
           } />
-        <UserSelect onChange={(item) => this.setState({ selectedUserId: item.id }, () => this.reloadData())} />
+        <UserSelect disabled={this.state.offline} onChange={(item) => this.setState({ selectedUserId: item.id }, () => this.reloadData())} />
         <Calendar
           ref={(ref) => this._calendar = ref}
           onDayPress={(day) => this._selectedDate = new Date(day.dateString)}

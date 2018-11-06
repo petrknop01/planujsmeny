@@ -34,6 +34,11 @@ import { UrlsApi } from "./../Utils/urls";
 import { Colors, FontSize } from "../Utils/variables";
 
 export class UserSelect extends Component {
+    static defaultProps = {
+        disabled: false
+    }
+
+
     constructor(props) {
         super(props);
         let { userID, username } = props.navigation.getScreenProps();
@@ -99,7 +104,7 @@ export class UserSelect extends Component {
 
         return (
             <View style={{ height: 60, backgroundColor: "white", padding: 10 }}>
-                <Select selected={this.state.selectedUser} items={this.state.users} onChange={(item) => {
+                <Select disabled={this.props.disabled} selected={this.state.selectedUser} items={this.state.users} onChange={(item) => {
                     this.setState({ selectedUser: item });
                     this.props.onChange(item)
                 }
