@@ -9,7 +9,7 @@
 import React, { Component } from 'react';
 import Router from "./Router";
 import LoginScreen from "./Screens/LoginScreen"
-import { Container, StyleProvider } from "native-base";
+import { Container, StyleProvider, Root } from "native-base";
 import getTheme from './native-base-theme/components';
 import platform from './native-base-theme/variables/platform';
 import DataStore from "./Utils/dataStore";
@@ -91,9 +91,11 @@ export default class App extends Component {
   render() {
     return (
       <StyleProvider style={getTheme(platform)}>
+      <Root>
         <Container>
           {this.renderInner()}
         </Container>
+        </Root>
       </StyleProvider>
     );
   }

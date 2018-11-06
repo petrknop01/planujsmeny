@@ -84,7 +84,7 @@ export default class ModalPopup extends Component {
                             backgroundColor: "white",
                             borderRadius: variable.borderRadiusBase,
                             shadowColor: variable.platformStyle === "material" ? variable.brandDark : undefined,
-                            height: 300,
+                            height: 360,
                             shadowOffset: variable.platformStyle === "material" ? { width: 0, height: 2 } : undefined,
                             shadowOpacity: variable.platformStyle === "material" ? 0.2 : undefined,
                             shadowRadius: variable.platformStyle === "material" ? 1.2 : undefined,
@@ -93,7 +93,7 @@ export default class ModalPopup extends Component {
                         <Content style={{ padding: 20 }}>
                             {this.props.children}
                         </Content>
-                        <Footer style={{ alignItems: "center" }}>
+                        <Footer style={{ alignItems: "center", backgroundColor: Colors.header }}>
                             <Button small danger onPress={() => this.setState({ showModal: false })} style={{ marginRight: 10, alignSelf: "center" }}><Text>Zavřít</Text></Button>
                             <LoadingButton small success ref={(ref) => this._loadingButton = ref}  onPress={() => this.onPressSave()} style={{ marginLeft: 10, alignSelf: "center" }}><Text>Uložit</Text></LoadingButton>
                         </Footer>

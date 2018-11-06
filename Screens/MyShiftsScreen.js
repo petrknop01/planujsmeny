@@ -15,6 +15,8 @@ import OfflineNotice from "./../Components/OfflineNotice";
 import ShiftListItemFree from "./../Components/ShiftListItemFree";
 import ShiftListItem from "./../Components/ShiftListItem";
 import Calendar from "./../Components/Calendar";
+import UserSelect from "./../Components/UserSelect";
+
 import DataStore from "./../Utils/dataStore";
 import XDate from 'xdate';
 
@@ -25,15 +27,30 @@ export default class MyShiftsScreen extends Component {
   shifts = {};
   offline = true;
 
-  state = {
-    jobs: null,
-    workplaces: null,
-    markedDates: {},
-    shifts: {},
-    date: null,
-  };
+  constructor(props){
+    super(props);
+    let { userID } = props.navigation.getScreenProps();
+
+    this.state = {
+      jobs: null,
+      selectedUserId: userID,
+      workplaces: null,
+      markedDates: {},
+      shifts: {},
+      date: null,
+    };
+  }
 
 
+  reloadData(){
+    this.shifts = {};
+    _selectedDate = new Date();
+
+    this.setState({
+      markedDates: {},
+      shifts: {},
+    }, () =>  this._calendar.selectDate(new Date()));
+  }
 
   loadJobsAndWorkplaces(callback) {
     let { address, cookie, relogin } = this.props.navigation.getScreenProps();
@@ -58,12 +75,11 @@ export default class MyShiftsScreen extends Component {
   }
 
 
-
   loadDates(day) {
-    let date = new Date(day.dateString);
     let data = {
       from: calculateDate(day.dateString, -1),
-      to: calculateDate(day.dateString, +1)
+      to: calculateDate(day.dateString, +1),
+      empl: this.state.selectedUserId
     }
 
     let { address, cookie, relogin } = this.props.navigation.getScreenProps();
@@ -116,6 +132,12 @@ export default class MyShiftsScreen extends Component {
 
 
   saveOfflineData(shifts) {
+    let { userID } = this.props.navigation.getScreenProps();
+
+    if(this.state.selectedUserId !== userID){
+      return;
+    }
+
     this.shifts = { ...shifts, ...this.shifts };
     DataStore.SetMyShift({ jobs: this.state.jobs, workplaces: this.state.workplaces, shifts: this.shifts, savedDate: new Date() }, () => null);
   }
@@ -254,6 +276,7 @@ export default class MyShiftsScreen extends Component {
             }
           }
         }/>
+        <UserSelect onChange={(item) => this.setState({selectedUserId: item.id}, () => this.reloadData())}/>
         <Calendar
           ref={(ref) => this._calendar = ref}
           onDayPress={(day) => this._selectedDate = new Date(day.dateString)}

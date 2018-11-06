@@ -72,10 +72,8 @@ export default class LoginScreen extends Component {
   onPressLoginDemo = () => {
     this.togleLoadingButton(this._loadingButtonDemo);
     let adresa = UrlsApi.base_url;
-    console.log("testLogin");
     Ajax.post(adresa + UrlsApi.demoLogin, {name: "test", pw: "test" }) 
       .then(response => {
-        console.log("login");
         var cookies = response.headers.get('set-cookie');
         response.json().then(res => {
           this.togleLoadingButton(this._loadingButtonDemo);
@@ -120,7 +118,7 @@ export default class LoginScreen extends Component {
       "Chyba",
       error,
       [
-        { text: 'Zrušit', onPress: () => { }, style: 'cancel' },
+        { text: 'Ok', onPress: () => { }, style: 'cancel' },
       ],
       { cancelable: false }
     )

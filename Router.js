@@ -80,7 +80,7 @@ function initStack(initRoute) {
         screen: MyShiftsScreen,
         navigationOptions: ({ navigation, screenProps }) => {
           return {
-            title: "Moje směny",
+            title: "Mé směny",
             ...headerSetting,
             headerRight: <DrawerIcon navigation={navigation} />,
             headerLeft: null,
@@ -158,7 +158,7 @@ const Router = createDrawerNavigator(
       screen: initStack("PlansShifts"),
       navigationOptions: ({ navigation, screenProps }) => {
         return {
-          drawerLabel: 'Plán směny'
+          drawerLabel: 'Plán směn'
         }
       }
     },

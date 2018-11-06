@@ -79,13 +79,11 @@ export default class FreeShiftsScreen extends Component {
           }
         }
       }
-      //console.log(this.state.items);
       const newItems = {};
       Object.keys(this.state.items).forEach(key => { newItems[key] = this.state.items[key]; });
       this.setState({
         items: newItems
       });
-    // console.log(`Load Items for ${day.year}-${day.month}`);
   }
 
   renderItem(item) {

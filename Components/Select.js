@@ -33,6 +33,7 @@ export default class Select extends Component {
 
     static defaultProps = {
         noOverflow: false,
+        disabled: false,
     }
 
 
@@ -96,6 +97,7 @@ export default class Select extends Component {
                 flex: 1
             }}>
                 <TouchableOpacity
+                    disabled={this.props.disabled} 
                     style={{ zIndex: 2 }}
                     onPress={() => this.setState({ showList: !this.state.showList })}
                 >
@@ -104,9 +106,10 @@ export default class Select extends Component {
                             <View>
                                 <Text numberOfLines={1} ellipsizeMode="tail">{this.props.selected.label}</Text>
                             </View>
+                            {this.props.disabled? null :
                             <View style={{ paddingLeft: 10, marginTop: -3 }}>
                                 <Icon name="arrow-down"/>
-                            </View>
+                            </View>}
                         </View>
                     </View>
                 </TouchableOpacity>

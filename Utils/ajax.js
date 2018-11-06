@@ -1,6 +1,7 @@
 
 import { NetInfo } from 'react-native';
 import CookieManager from "react-native-cookies";
+import UrlsApi from "./urls";
 
 class Ajax {
     isConnected = true;
@@ -11,6 +12,7 @@ class Ajax {
     }
 
     get = (adresa, data, cookies) => {
+        console.log(adresa);
         if (!this.isConnected) {
             return Promise.reject(new Error('Není připojení k internetu'))
         }
@@ -50,6 +52,7 @@ class Ajax {
     }
 
     post = (adresa, data, cookies) => {
+        console.log(adresa);
         if (!this.isConnected) {
             return Promise.reject(new Error('Není připojení k internetu'))
         }
