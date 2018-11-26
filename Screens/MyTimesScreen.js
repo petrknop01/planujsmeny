@@ -10,12 +10,11 @@ import React, { Component } from 'react';
 import { View, Alert } from "react-native";
 import Ajax from "./../Utils/ajax";
 
-import { Container, Content, Text, Button, Icon, Toast } from "native-base";
-import { Colors, FontSize } from "../Utils/variables";
-import { UrlsFull, UrlsApi } from "./../Utils/urls";
+import { Container, Text, Toast } from "native-base";
+import { Colors } from "../Utils/variables";
+import { UrlsApi } from "./../Utils/urls";
 import { xdateToData, calculateDate } from "./../Utils/functions";
 
-import Divider from "./../Components/Divider";
 import MyTimesListItem from "./../Components/MyTimesListItem";
 import MyTimesFreeListItem from "./../Components/MyTimesFreeListItem";
 import OfflineNotice from "./../Components/OfflineNotice";
@@ -137,9 +136,9 @@ export default class MyTimesScreen extends Component {
             this.showAlert(res.info, res.ok == 0);
           }, 250));
       })
-      .catch(error => {
-        this._modal.closeModal();
-      });
+      .catch(() => {
+          this._modal.closeModal();
+        });
   }
 
 
@@ -329,9 +328,9 @@ export default class MyTimesScreen extends Component {
         this._calendar.selectDate(new Date(item.date));
         this.showAlert(res.info, res.ok == 0);
       })
-      .catch(error => {
-        button.endLoading();
-      });
+      .catch(() => {
+          button.endLoading();
+        });
   }
 
   onPressEdit(item) {

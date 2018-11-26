@@ -41,10 +41,13 @@ export default class HomeScreen extends Component {
     loading: true,
     comment: "",
     commentError: false,
+    commentDevice: "",
+    commentDeviceError: false,
     offline: false,
     savedDate: null,
     wpNames: {},
-    error: []
+    error: [],
+    showCommentDevice: false
   }
 
   componentDidMount() {
@@ -239,12 +242,17 @@ export default class HomeScreen extends Component {
         data["comment"] = this.state.comment;
       }
 
+      if(this.state.commentDevice != ""){
+        data["commentComputer"] = this.state.commentDevice;
+      }
+
       Ajax.post(address + this.getUrl(type), data, cookie)
         .then(response => {
           response.json().then(res => {
             if (res.action == "fillComment" || res.action == "confirmUnallowed"){
               this.setState({
-                error: res.infoMessages
+                error: res.infoMessages,
+                showCommentDevice: res.action == "confirmUnallowed"
               }, () => {
                 this.endLoadingButton();
                 this._modal.showModal();
@@ -378,22 +386,38 @@ export default class HomeScreen extends Component {
             this.setState({
               comment: "",
               commentError: true,
+              commentDevice: "",
+              commentDevceError: true,
             });
           }}>
           <View>
             <View>
               {this.state.error.map((item, i) => <Text key={i} style={{ color: Colors.red, paddingBottom: 10, textAlign: "center" }}>{item[1]}</Text>)}
             </View>
+            {this.state.showCommentDevice?
             <View style={{ height: 100 }}>
+              <Input
+                style={{ flex: 1 }}
+                error={this.state.commentDeviceError}
+                value={this.state.commentDevice}
+                placeholder="Proč používáte jiné zařízení"
+                onChangeText={(commentDevice) => this.setState({ commentDevice, commentDeviceError: commentDevice == "" })}
+                multiline={true}
+              />
+            </View> : null}
+
+             {!this.state.showCommentDevice?
+            <View style={{ height: 100, marginTop: 10 }}>
               <Input
                 style={{ flex: 1 }}
                 error={this.state.commentError}
                 value={this.state.comment}
-                placeholder="Komentář"
+                placeholder="Komentář k vašemu příchodu"
                 onChangeText={(comment) => this.setState({ comment, commentError: comment == "" })}
                 multiline={true}
               />
-            </View>
+            </View> : null}
+            
           </View>
         </ModalPopup>
       </Container>

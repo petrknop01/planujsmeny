@@ -1,8 +1,54 @@
 import React, { Component } from 'react';
-import { View } from "react-native";
-import { Text, Button } from "native-base";
+import { View, TouchableOpacity } from "react-native";
+import { Text, Button, Icon } from "native-base";
 import { Colors, FontSize, DayNamesShort } from "../Utils/variables";
 import { invertColor } from "../Utils/functions";
+import LoadingButton from "./../Components/LoadingButton"
+
+function Comment({ item }) {
+    return (
+        <View
+            style={{
+                borderRadius: 5,
+                overflow: "hidden",
+                backgroundColor: "white",
+                marginBottom: 10,
+                flex: 1,
+            }}>
+            <Text style={{ fontWeight: "bold", padding: 10, }}>{item}</Text>
+        </View>
+    );
+}
+
+function Shift({ item, onPressEdit, onPressDelete }) {
+    return (
+        <View
+            style={{
+                borderRadius: 5,
+                overflow: "hidden",
+                backgroundColor: "white",
+                marginBottom: 10,
+                flex: 1,
+            }}>
+            <Text style={{ fontWeight: "bold", backgroundColor: item.color, padding: 10, color: invertColor(item.color, true) }}>{item.userName}</Text>
+            <View style={{ padding: 10 }}>
+                <Text style={{ fontWeight: "bold", paddingBottom: 5 }} numberOfLines={1} ellipsizeMode="tail" >{item.jobName}</Text>
+                <View>
+                    <Text>Od: {item.start}</Text>
+                    <Text>Do: {item.end}</Text>
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "flex-end" }}>
+                    <LoadingButton ref={(r) => ref = r}
+                        danger
+                        small
+                        onPress={() => onPressDelete(ref, item)}
+                        style={{ alignSelf: "flex-end", margin: 5 }}><Text>Vymazat</Text></LoadingButton>
+                    <Button small onPress={() => onPressEdit(item)} style={{ alignSelf: "flex-end", margin: 5 }}><Text>Editovat</Text></Button>
+                </View>
+            </View>
+        </View>
+    );
+}
 
 
 export default function PlanShiftListItem(props) {
@@ -13,36 +59,17 @@ export default function PlanShiftListItem(props) {
             <View style={{ width: 40, alignItems: "center", marginTop: 5, marginRight: 5 }}>
                 <Text style={{ fontSize: FontSize.big, fontWeight: "bold", }}>{props.item.date.getDate()}</Text>
                 <Text style={{ fontSize: FontSize.small, }}>{DayNamesShort[props.item.date.getDay()]}</Text>
+                <TouchableOpacity onPress={() => props.onPressHome(props.item)} style={{ padding: 5 }}><Icon name="home" style={{ fontSize: 20, color: props.item.notHomeShifts.length > 0 || props.item.absences.length > 0 ? Colors.red : Colors.gray }} /></TouchableOpacity>
+                <TouchableOpacity onPress={() => props.onPressComment(props.item)} style={{ padding: 5 }}><Icon name="chatboxes" style={{ fontSize: 20, color: props.item.comments.length > 0 ? Colors.blue : Colors.gray }} /></TouchableOpacity>
             </View>
-            <View
-                style={{
-                    flex: 1
-                }}
-            >
-                <View
-                    style={{
-                        borderRadius: 5,
-                        // shadowRadius: 4,
-                        // shadowOffset: { width: 2, height: 0 },
-                        // shadowColor: 'black',
-                        // shadowOpacity: 0.2,
-                        overflow: "hidden",
-                        backgroundColor: "white",
-                        marginBottom: 10,                        
-                        flex: 1,
-                    }}>
-                    <Text style={{ fontWeight: "bold", backgroundColor: "#000000", padding: 10, color: invertColor("#000000", true) }}>03:00 - 14:00</Text>
-                    <View style={{ padding: 10, paddingBottom: 0 }}>
-                        <Text style={{ fontWeight: "bold" }} numberOfLines={1} ellipsizeMode="tail" >Smena 1</Text>
-                    </View>
-                    <View style={{ padding: 10 , flex: 1 }}>
-                        <Button small success onPress={() => props.onPressEdit()} style={{ alignSelf: "flex-end" }}><Text>Editovat</Text></Button>
-                    </View>
+            <View style={{ flex: 1 }}>
+                <View>
+                    {props.item.shifts.map((item, i) => <Shift key={i} item={item} onPressEdit={(item) => props.onPressEdit(item)} onPressDelete={(item) => props.onPressDelete(item)} />)}
                 </View>
-                <View style={{ padding: 5, paddingTop: 7, flex: 1, marginBottom: 10 }}>
-                    <Button small onPress={() => props.onPressAdd()} style={{ alignSelf: "flex-end" }}><Text>Přidat</Text></Button>
-                </View>
+                <Button small success onPress={() => props.onPressAdd(props.item)} style={{ alignSelf: "flex-end" }}><Text>Přidat</Text></Button>
             </View>
-        </View>
+        </View >
     )
 }
+
+

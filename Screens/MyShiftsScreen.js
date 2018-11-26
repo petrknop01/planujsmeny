@@ -60,7 +60,7 @@ export default class MyShiftsScreen extends Component {
       .then(response => {
         if (response.ok == 0) {
           if (response.loggedOut == 1) {
-            relogin(() => this.loadJobsAndWorkplaces())
+            relogin(() => this.loadJobsAndWorkplaces(callback))
           }
           return;
         }

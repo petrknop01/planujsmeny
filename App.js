@@ -42,7 +42,7 @@ export default class App extends Component {
           username: data.UserName,
           cookie: data.Cookie,
           appKey: data.AppKey,
-        }, () => this.relogin(this.setState({loading: false})));
+        }, () => this.relogin(() => this.setState({loading: false})));
       }
     });
   }

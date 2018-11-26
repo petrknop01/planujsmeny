@@ -19,5 +19,7 @@ export const UrlsApi = {
     myTimes: "/index.php?o=ajax&ajax=appLoadAvailsForUser&a=loadAvails",
     myTimesAdd: "/index.php?o=ajax&ajax=appAvailability&a=addAvail",
     myTimesEdit: "/index.php?o=ajax&ajax=appAvailability&a=editAvail",
-    users: "/index.php?o=ajax&ajax=appLoadInfo&a=loadActiveUsers"
+    users: "/index.php?o=ajax&ajax=appLoadInfo&a=loadActiveUsers",
+    shiftsForWp: "/index.php?o=ajax&ajax=appLoadShifts&a=loadShifts",
+    metadataShiftsForWp: "/index.php?o=ajax&ajax=appLoadInfo&a=getMetadataForPlanning"
 }
