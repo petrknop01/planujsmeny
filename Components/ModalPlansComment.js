@@ -13,7 +13,7 @@ export default class ModalPlansComment extends Component {
     open(item) {
         let comment = "";
         if (item.comments && item.comments.length > 0) {
-            comment = item.comments
+            comment = item.comments[0].comment[0];
         }
         this.setState({
             comment: comment,

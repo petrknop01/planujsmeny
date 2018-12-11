@@ -20,7 +20,7 @@ function Comment({ item }) {
     );
 }
 
-function Shift({ item, onPressEdit, onPressDelete }) {
+function Shift({noEdit, item, onPressEdit, onPressDelete }) {
     return (
         <View
             style={{
@@ -38,12 +38,13 @@ function Shift({ item, onPressEdit, onPressDelete }) {
                     <Text>Do: {item.end}</Text>
                 </View>
                 <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "flex-end" }}>
+                {noEdit ? null :
                     <LoadingButton ref={(r) => ref = r}
                         danger
                         small
                         onPress={() => onPressDelete(ref, item)}
-                        style={{ alignSelf: "flex-end", margin: 5 }}><Text>Vymazat</Text></LoadingButton>
-                    <Button small onPress={() => onPressEdit(item)} style={{ alignSelf: "flex-end", margin: 5 }}><Text>Editovat</Text></Button>
+                        style={{ alignSelf: "flex-end", margin: 5 }}><Text>Vymazat</Text></LoadingButton> }
+                    {noEdit ? null :<Button small onPress={() => onPressEdit(item)} style={{ alignSelf: "flex-end", margin: 5 }}><Text>Editovat</Text></Button>}
                 </View>
             </View>
         </View>
@@ -64,9 +65,10 @@ export default function PlanShiftListItem(props) {
             </View>
             <View style={{ flex: 1 }}>
                 <View>
-                    {props.item.shifts.map((item, i) => <Shift key={i} item={item} onPressEdit={(item) => props.onPressEdit(item)} onPressDelete={(item) => props.onPressDelete(item)} />)}
+                    {props.item.shifts.map((item, i) => <Shift noEdit={props.noEdit} key={i} item={item} onPressEdit={(item) => props.onPressEdit(item)} onPressDelete={(item) => props.onPressDelete(item)} />)}
                 </View>
-                <Button small success onPress={() => props.onPressAdd(props.item)} style={{ alignSelf: "flex-end" }}><Text>Přidat</Text></Button>
+                {props.noEdit? <View></View> :
+                <Button small success onPress={() => props.onPressAdd(props.item)} style={{ alignSelf: "flex-end" }}><Text>Přidat</Text></Button>}
             </View>
         </View >
     )

@@ -49,7 +49,8 @@ export default class PlansShiftsScreen extends Component {
     date: null,
     markedDates: {},
     data: {},
-    refreshing: false
+    refreshing: false,
+    lastDate: null
   }
 
 
@@ -113,7 +114,7 @@ export default class PlansShiftsScreen extends Component {
     }
 
     if (this.state.selectedWp.id != null) {
-      data.wp == this.state.selectedWp.id;
+      data.wp = this.state.selectedWp.id;
     }
 
     let { address, cookie, relogin } = this.props.navigation.getScreenProps();
@@ -130,7 +131,8 @@ export default class PlansShiftsScreen extends Component {
         this.setState({
           shifts: this.convertShifts(response, day),
           markedDates: this.convertMarkedDates(),
-          refreshing: false
+          refreshing: false,
+          lastDate: response.lastForbidenEditationDate
         },
           () => null //this.saveOfflineData(response.shifts)  
         );
@@ -228,13 +230,15 @@ export default class PlansShiftsScreen extends Component {
     for (let i = -85; i < 85; i++) {
       const time = day.timestamp + i * 24 * 60 * 60 * 1000;
       const strTime = this.timeToString(time);
-      this.state.data[strTime] = [{
-        date: new Date(strTime),
-        notHomeShifts: [],
-        absences: [],
-        shifts: [],
-        comments: []
-      }];
+      if (!this.state.data[strTime]) {
+        this.state.data[strTime] = [{
+          date: new Date(strTime),
+          notHomeShifts: [],
+          absences: [],
+          shifts: [],
+          comments: []
+        }];
+      }
     }
 
     this.itemsToShiftObject(items.notHomeShifts, TYPE.notHomeShifts);
@@ -253,9 +257,9 @@ export default class PlansShiftsScreen extends Component {
         const item = items[key];
         const strTime = this.timeToString(key.replace("d", ""));
         if (type == TYPE.comments) {
-          this.state.data[strTime][0].comments.push({
+          this.state.data[strTime][0].comments = [{
             comment: [item]
-          });
+          }];
         } else {
 
           for (const key2 in item) {
@@ -263,29 +267,38 @@ export default class PlansShiftsScreen extends Component {
               const item2 = item[key2];
               switch (type) {
                 case TYPE.notHomeShifts:
-                  this.state.data[strTime][0].notHomeShifts.push({
-                    userName: this.getUserName(item2.user),
-                    wpName: this.getWorkspaceName(item2.wp)
-                  });
+                  if (!this.inArray(this.state.data[strTime][0].notHomeShifts, key2)) {
+                    this.state.data[strTime][0].notHomeShifts.push({
+                      id: key2,
+                      userName: this.getUserName(item2.user),
+                      wpName: this.getWorkspaceName(item2.wp)
+                    });
+                  }
                   break;
                 case TYPE.absences:
-                  this.state.data[strTime][0].absences.push({
-                    userName: this.getUserName(item2.user),
-                    absenceName: this.getAbsenceName(item2.absenceType),
-                    color: this.getAbsenceColor(item2.absenceType),
-                  });
+                  if (!this.inArray(this.state.data[strTime][0].absences, key2)) {
+                    this.state.data[strTime][0].absences.push({
+                      id: key2,
+                      userName: this.getUserName(item2.user),
+                      absenceName: this.getAbsenceName(item2.absenceType),
+                      color: this.getAbsenceColor(item2.absenceType),
+                    });
+                  }
                   break;
                 case TYPE.shifts:
-                  for (const key in item2) {
-                    if (item2.hasOwnProperty(key)) {
-                      const shift = item2[key];
-                      this.state.data[strTime][0].shifts.push({
-                        userName: this.getUserName(shift.user),
-                        jobName: this.getJobName(shift.job),
-                        color: this.getJobsColor(shift.job),
-                        start: shift.start,
-                        end: shift.end
-                      });
+                  for (const id in item2) {
+                    if (item2.hasOwnProperty(id)) {
+                      const shift = item2[id];
+                      if (!this.inArray(this.state.data[strTime][0].shifts, id)) {
+                        this.state.data[strTime][0].shifts.push({
+                          userName: this.getUserName(shift.user),
+                          jobName: this.getJobName(shift.job),
+                          color: this.getJobsColor(shift.job),
+                          start: shift.start,
+                          end: shift.end,
+                          id: id
+                        });
+                      }
                     }
                   }
                   break;
@@ -295,6 +308,17 @@ export default class PlansShiftsScreen extends Component {
         }
       }
     }
+  }
+
+  inArray(array, id) {
+    for (let index = 0; index < array.length; index++) {
+      const element = array[index];
+      if (element.id == id) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   getUserName(id) {
@@ -351,6 +375,7 @@ export default class PlansShiftsScreen extends Component {
         onPressEdit={(item) => null}
         onPressDelete={(item) => null}
         onPressAdd={(item) => null}
+        noEdit={this.noEdit(item.date)}
       />
     );
   }
@@ -361,6 +386,14 @@ export default class PlansShiftsScreen extends Component {
 
   onPressComment(item) {
     this._modalPlansComments.open(item);
+  }
+
+  noEdit(actualDate) {
+    let date = new Date(this.state.lastDate);
+    if (this.state.offline) {
+      return false;
+    }
+    return actualDate < date;
   }
 
   render() {

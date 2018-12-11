@@ -23,7 +23,7 @@ function Absence({ item }) {
     );
 }
 
-function NotHomeShifts(props) {
+function NotHomeShifts({item}) {
     return (
         <View
             style={{
