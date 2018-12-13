@@ -461,6 +461,7 @@ export default class MyTimesScreen extends Component {
           renderItem={(day) => this.renderItem(day)}
           renderEmptyDate={(day) => this.renderEmptyDate(day)}
           markingType={'multi-dot'}
+          offline={this.state.offline}
           markedDates={this.state.markedDates}
           loadItemsForMonth={(day) => this.loadItems(day)}
           onRefresh={(day) => this.loadOld(day)}

@@ -139,12 +139,40 @@ export default class PlansShiftsScreen extends Component {
           IDwp: response.IDwp,
           wpJobs: response.wpJobs
         },
-          () => null //this.saveOfflineData(response.shifts)  
+          () => this.saveOfflineData()  
         );
       })
       .catch(error => {
-        //this.getOfflineData(day);
+        this.getOfflineData();
       });
+  }
+
+
+  saveOfflineData(){
+    if(this.state.selectedWp.id == null){
+      let data = this.state;
+      data.date = new Date();
+      DataStore.SetMyPlansShifts(data, () => null);
+    }
+  }
+
+  getOfflineData(){
+    DataStore.GetMyPlansShifts((data) => 
+      this.setState({
+        listWp: data.listWp,
+        jobs: data.jobs,
+        wps: data.wps,
+        users: data.users,
+        absences: data.absences,
+        shifts: data.shifts,
+        markedDates: data.markedDates,
+        lastDate: data.lastDate,
+        IDwp: data.IDwp,
+        data: data.data,
+        wpJobs: data.wpJobs,
+        date: data.date
+      })
+    );
   }
 
   convertMarkedDates() {
@@ -227,7 +255,7 @@ export default class PlansShiftsScreen extends Component {
         }, () => callback())
       })
       .catch(error => {
-        //this.getOfflineData(xdateToData(XDate(true)));
+        this.getOfflineData();
       });
   }
 
@@ -431,6 +459,7 @@ export default class PlansShiftsScreen extends Component {
   }
 
   renderItem(item) {
+    item.date = new Date(item.date);
     return (
       <PlanShiftListItem
         item={item}
@@ -455,7 +484,7 @@ export default class PlansShiftsScreen extends Component {
   noEdit(actualDate) {
     let date = new Date(this.state.lastDate);
     if (this.state.offline) {
-      return false;
+      return true;
     }
     return actualDate < date;
   }
@@ -491,6 +520,7 @@ export default class PlansShiftsScreen extends Component {
           onDayPress={(day) => this._selectedDate = new Date(day.dateString)}
           onDayChange={(day) => this._selectedDate = new Date(day.dateString)}
           items={this.state.data}
+          offline={this.state.offline}
           renderItem={(day) => this.renderItem(day)}
           renderEmptyDay={(day) => null}
           markingType={'multi-dot'}

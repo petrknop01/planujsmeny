@@ -33,6 +33,9 @@ export default class Calendar extends Component {
     }
 
     rowHasChanged(r1, r2) {
+        if(this.props.offline){
+            return true;
+        }
         return JSON.stringify(r1) !== JSON.stringify(r2) ;
     }
 

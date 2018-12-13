@@ -8,6 +8,7 @@ const _baseKey = _app + ":BaseData";
 const _myShiftsKey = _app + ":MyShifts";
 const _myHome =  _app + ":Home";
 const _myTimes =  _app + ":MyTimes";
+const _myPlansShift =  _app + ":MyPlans";
 
 export default class DataStore {
   static GetBaseData(callback) {
@@ -89,7 +90,7 @@ export default class DataStore {
   }
 
   static GetMyPlansShifts(callback){
-    AsyncStorage.getItem(_myTimes, (error, value) => {
+    AsyncStorage.getItem(_myPlansShift, (error, value) => {
       if (error) {
         callback(null)
       } else {
@@ -103,6 +104,6 @@ export default class DataStore {
   }
 
   static SetMyPlansShifts(data, callback){
-    AsyncStorage.setItem(_myTimes, JSON.stringify(data), () => callback());
+    AsyncStorage.setItem(_myPlansShift, JSON.stringify(data), () => callback());
   }
 }
