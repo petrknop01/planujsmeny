@@ -20,7 +20,10 @@ function Comment({ item }) {
     );
 }
 
+
 function Shift({noEdit, item, onPressEdit, onPressDelete }) {
+    let ref = null;
+
     return (
         <View
             style={{
@@ -65,7 +68,7 @@ export default function PlanShiftListItem(props) {
             </View>
             <View style={{ flex: 1 }}>
                 <View>
-                    {props.item.shifts.map((item, i) => <Shift noEdit={props.noEdit} key={i} item={item} onPressEdit={(item) => props.onPressEdit(item)} onPressDelete={(item) => props.onPressDelete(item)} />)}
+                    {props.item.shifts.map((item, i) => <Shift noEdit={props.noEdit} key={i} item={item} onPressEdit={(item) => props.onPressEdit(item)} onPressDelete={(button, item) => props.onPressDelete(button, item)} />)}
                 </View>
                 {props.noEdit? <View></View> :
                 <Button small success onPress={() => props.onPressAdd(props.item)} style={{ alignSelf: "flex-end" }}><Text>Přidat</Text></Button>}

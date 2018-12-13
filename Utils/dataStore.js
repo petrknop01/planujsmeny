@@ -87,4 +87,22 @@ export default class DataStore {
   static SetMyTimes(data, callback){
     AsyncStorage.setItem(_myTimes, JSON.stringify(data), () => callback());
   }
+
+  static GetMyPlansShifts(callback){
+    AsyncStorage.getItem(_myTimes, (error, value) => {
+      if (error) {
+        callback(null)
+      } else {
+        if (value) {
+          callback(JSON.parse(value));
+        } else {
+          callback(null);
+        }
+      }
+    });
+  }
+
+  static SetMyPlansShifts(data, callback){
+    AsyncStorage.setItem(_myTimes, JSON.stringify(data), () => callback());
+  }
 }

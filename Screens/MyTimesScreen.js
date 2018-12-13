@@ -122,10 +122,10 @@ export default class MyTimesScreen extends Component {
       data.date = this.state.editedDate.toJSON().slice(0, 10);
     }
 
-    this.setState({
-      items: {},
-      markedDates: {}
-    });
+    // this.setState({
+    //   items: {},
+    //   markedDates: {}
+    // });
 
     Ajax.post(address + url + "&empl="+this.state.selectedUserId, data, cookie)
       .then(response => response.json())
@@ -208,7 +208,8 @@ export default class MyTimesScreen extends Component {
   }
 
   setData(data, day) {
-    this.avails = { ...this.avails, ...data.avails };
+    this.avails = this.margeAvails(this.avails, data.avails);
+
     types = this.getTypes(data.types);
     this.setState({
       items: this.convertMyTimes(this.avails, data.types, day),
@@ -220,6 +221,16 @@ export default class MyTimesScreen extends Component {
       typesArr: types,
       selectedTypes: types[0]
     })
+  }
+
+  margeAvails(oldDates, newDates){
+    let result = { ...oldDates, ...newDates};
+    for (const key in result) {
+      if (newDates.hasOwnProperty(key)) {
+        result[key] = newDates[key];
+      }
+    }
+    return result;
   }
 
   convertMarkedDates(items) {
@@ -305,7 +316,7 @@ export default class MyTimesScreen extends Component {
     return date.toISOString().split('T')[0];
   }
 
-  onPressDelete(button, item) {
+  onDelete(button, item) {
     button.startLoading();
     let url = UrlsApi.myTimesEdit;
     let { address, cookie } = this.props.navigation.getScreenProps();
@@ -314,11 +325,6 @@ export default class MyTimesScreen extends Component {
       delete: 1
     }
 
-    this.setState({
-      items: {},
-      markedDates: {}
-    });
-    this.avails = {};
     data.IDtw = item.id;
 
     Ajax.post(address + url, data, cookie)
@@ -331,6 +337,19 @@ export default class MyTimesScreen extends Component {
       .catch(() => {
           button.endLoading();
         });
+  }
+
+
+  onPressDelete(button, item) {
+    Alert.alert(
+      "Vymazat",
+      "Opravdu chcete položku smazat?",
+      [
+        { text: 'Ano', onPress: () => this.onDelete(button, item)},
+        { text: 'Ne', onPress: () => { }, style: 'cancel' },
+      ],
+      { cancelable: false }
+    )
   }
 
   onPressEdit(item) {

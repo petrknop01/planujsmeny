@@ -21,5 +21,9 @@ export const UrlsApi = {
     myTimesEdit: "/index.php?o=ajax&ajax=appAvailability&a=editAvail",
     users: "/index.php?o=ajax&ajax=appLoadInfo&a=loadActiveUsers",
     shiftsForWp: "/index.php?o=ajax&ajax=appLoadShifts&a=loadShifts",
-    metadataShiftsForWp: "/index.php?o=ajax&ajax=appLoadInfo&a=getMetadataForPlanning"
+    metadataShiftsForWp: "/index.php?o=ajax&ajax=appLoadInfo&a=getMetadataForPlanning",
+    removeShift: "/index.php?o=ajax&ajax=appPlanShifts&a=removeShift",
+    editShift: "/index.php?o=ajax&ajax=appPlanShifts&a=editShift",
+    addShift: "/index.php?o=ajax&ajax=appPlanShifts&a=addShift",
+    getShiftsUser: "/index.php?o=ajax&ajax=appPlanShifts&a=getUsers"
 }

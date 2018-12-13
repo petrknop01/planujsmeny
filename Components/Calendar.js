@@ -33,7 +33,7 @@ export default class Calendar extends Component {
     }
 
     rowHasChanged(r1, r2) {
-        return r1.name !== r2.name ;
+        return JSON.stringify(r1) !== JSON.stringify(r2) ;
     }
 
     renderDay(day, item){

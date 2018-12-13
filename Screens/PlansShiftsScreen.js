@@ -7,13 +7,14 @@
  */
 
 import React, { Component } from 'react';
-import { View, TouchableOpacity } from "react-native";
-import { Container, Content, Text, Button, Icon } from "native-base";
+import { View, Alert } from "react-native";
+import { Container, Content, Text, Button, Icon, Toast} from "native-base";
 import { Colors, FontSize } from "../Utils/variables";
 import { UrlsFull, UrlsApi } from "./../Utils/urls";
 import { xdateToData, calculateDate } from "./../Utils/functions";
 import Calendar from "./../Components/Calendar";
 import Ajax from "./../Utils/ajax";
+import DataStore from "./../Utils/dataStore";
 
 import Select from "./../Components/Select";
 import PlanShiftListItem from "./../Components/PlanShiftListItem";
@@ -23,6 +24,7 @@ import InputTime from "./../Components/InputTime";
 import WpSelect from "./../Components/WpSelect"
 import ModalPlansAbsence from "./../Components/ModalPlansAbsence"
 import ModalPlansComment from "./../Components/ModalPlansComment"
+import ModalForm from "./../Components/ModalForm"
 
 const TYPE = {
   notHomeShifts: 0,
@@ -36,7 +38,6 @@ export default class PlansShiftsScreen extends Component {
   _calendar = null;
   _selectedDate = new Date();
   shifts = {};
-  offline = true;
 
   state = {
     selectedWp: { id: null, label: "Nevybráno" },
@@ -50,7 +51,9 @@ export default class PlansShiftsScreen extends Component {
     markedDates: {},
     data: {},
     refreshing: false,
-    lastDate: null
+    lastDate: null,
+    IDwp: 0,
+    wpJobs: []
   }
 
 
@@ -132,7 +135,9 @@ export default class PlansShiftsScreen extends Component {
           shifts: this.convertShifts(response, day),
           markedDates: this.convertMarkedDates(),
           refreshing: false,
-          lastDate: response.lastForbidenEditationDate
+          lastDate: response.lastForbidenEditationDate,
+          IDwp: response.IDwp,
+          wpJobs: response.wpJobs
         },
           () => null //this.saveOfflineData(response.shifts)  
         );
@@ -269,6 +274,7 @@ export default class PlansShiftsScreen extends Component {
                 case TYPE.notHomeShifts:
                   if (!this.inArray(this.state.data[strTime][0].notHomeShifts, key2)) {
                     this.state.data[strTime][0].notHomeShifts.push({
+                      date: new Date(strTime),
                       id: key2,
                       userName: this.getUserName(item2.user),
                       wpName: this.getWorkspaceName(item2.wp)
@@ -278,6 +284,7 @@ export default class PlansShiftsScreen extends Component {
                 case TYPE.absences:
                   if (!this.inArray(this.state.data[strTime][0].absences, key2)) {
                     this.state.data[strTime][0].absences.push({
+                      date: new Date(strTime),
                       id: key2,
                       userName: this.getUserName(item2.user),
                       absenceName: this.getAbsenceName(item2.absenceType),
@@ -291,12 +298,15 @@ export default class PlansShiftsScreen extends Component {
                       const shift = item2[id];
                       if (!this.inArray(this.state.data[strTime][0].shifts, id)) {
                         this.state.data[strTime][0].shifts.push({
+                          date: new Date(strTime),
                           userName: this.getUserName(shift.user),
                           jobName: this.getJobName(shift.job),
                           color: this.getJobsColor(shift.job),
                           start: shift.start,
                           end: shift.end,
-                          id: id
+                          id: id,
+                          jobId: shift.job,
+                          userId: shift.user
                         });
                       }
                     }
@@ -365,6 +375,60 @@ export default class PlansShiftsScreen extends Component {
     return "#000000";
   }
 
+  onDelete(button, item) {
+    button.startLoading();
+    let url = UrlsApi.removeShift;
+    let { address, cookie } = this.props.navigation.getScreenProps();
+    let data = {
+      IDshift: item.id,
+      delete: 1
+    }
+
+    Ajax.post(address + url, data, cookie)
+      .then(response => response.json())
+      .then(res => {
+        button.endLoading();
+        this._calendar.selectDate(new Date(item.date));
+        this.showAlert(res.infoMessages[0][1], res.ok == 0);
+      })
+      .catch(() => {
+          button.endLoading();
+        });
+  }
+
+
+  onPressDelete(button, item) {
+    Alert.alert(
+      "Vymazat",
+      "Opravdu chcete položku smazat?",
+      [
+        { text: 'Ano', onPress: () => this.onDelete(button, item)},
+        { text: 'Ne', onPress: () => { }, style: 'cancel' },
+      ],
+      { cancelable: false }
+    )
+  }
+
+
+  onPressEdit(item){
+    this._modalForm.open(item, this.state.IDwp, item.date, this.getJobsList());
+  }
+
+  onPressAdd(item){
+    this._modalForm.open(null, this.state.IDwp, item.date, this.getJobsList());
+  }
+
+  getJobsList(){
+    let listJobs = [{ id: null, label: "Nevybráno" }];
+    for (const key in this.state.wpJobs) {
+      const id = this.state.wpJobs[key];
+      if (this.state.jobs.hasOwnProperty("id"+id)) {
+        const element = this.state.jobs["id"+id];
+        listJobs.push({ id: element.id, label: element.name });
+      }
+    }
+    return listJobs;
+  }
 
   renderItem(item) {
     return (
@@ -372,9 +436,9 @@ export default class PlansShiftsScreen extends Component {
         item={item}
         onPressHome={(item) => this.onPressHome(item)}
         onPressComment={(item) => this.onPressComment(item)}
-        onPressEdit={(item) => null}
-        onPressDelete={(item) => null}
-        onPressAdd={(item) => null}
+        onPressEdit={(item) => this.onPressEdit(item)}
+        onPressDelete={(button, item) => this.onPressDelete(button, item)}
+        onPressAdd={(item) => this.onPressAdd(item)}
         noEdit={this.noEdit(item.date)}
       />
     );
@@ -394,6 +458,13 @@ export default class PlansShiftsScreen extends Component {
       return false;
     }
     return actualDate < date;
+  }
+
+  onSaveDone(date,res){
+    this._calendar.selectDate(date);
+    setTimeout(() => {
+      this.showAlert(res.infoMessages[0][1], res.ok == 0);
+    }, 250);
   }
 
   render() {
@@ -430,6 +501,7 @@ export default class PlansShiftsScreen extends Component {
         />
         <ModalPlansAbsence ref={(ref) => this._modalPlansAbsence = ref} />
         <ModalPlansComment ref={(ref) => this._modalPlansComments = ref} />
+        <ModalForm ref={(ref) => this._modalForm = ref} navigation={this.props.navigation} onSaveDone={(date,res) => this.onSaveDone(date,res)}/>
         <ModalPopup ref={(ref) => this._modal = ref} onSave={() => this._modal.closeModal()}>
           <View>
             <View style={{ marginBottom: 10 }}>
