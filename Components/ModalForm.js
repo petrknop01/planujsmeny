@@ -80,19 +80,27 @@ class ModalForm extends Component {
             .then(response => response.json())
             .then(res => {
                 if(res.ok == 0){
+                    this.setState({
+                        userList: [],
+                        selectedUserId: null,
+                    })
                     this.showAlert(res.infoMessages[0][1]);
                 }
+
+                let inArray =  false;
                 let users = [];
                 for (const key in res.users) {
                     if (res.users.hasOwnProperty(key)) {
                         const element = res.users[key];
                         users.push(element);
+                        inArray |= (this.state.selectedItemUserId == element.id);
                     }
                 }
 
+
                 this.setState({
                     userList: users,
-                    selectedUserId: this.state.selectedItemUserId ? this.state.selectedItemUserId : null
+                    selectedUserId: inArray ? (this.state.selectedItemUserId ? this.state.selectedItemUserId : null) : null
                 });
             })
             .catch(() => {
@@ -101,10 +109,12 @@ class ModalForm extends Component {
 
     onSave(){
         if (this.state.selectedJob.id == null) {
+            this._modal._loadingButton.endLoading();
             return;
         }
 
         if (this.state.selectedUserId== null) {
+            this._modal._loadingButton.endLoading();
             return;
         }
 
@@ -121,7 +131,7 @@ class ModalForm extends Component {
             data.IDshift = this.state.id;
             url = UrlsApi.editShift;
         }else{
-            data.workplace = this.state.wpId;
+            data.wp = this.state.wpId;
             data.date = this.state.date.toJSON().slice(0, 10);
             url = UrlsApi.addShift;
         }
@@ -131,10 +141,7 @@ class ModalForm extends Component {
         Ajax.post(address + url, data, cookie)
         .then(response => response.json())
         .then(res => {
-            this._modal.closeModal(() =>
-                this.props.onSaveDone(this.state.date, res)
-            );
-
+            this._modal.closeModal(() => setTimeout(() => this.props.onSaveDone(this.state.date, res), 100));
         })
         .catch(() => {
         });
@@ -144,6 +151,9 @@ class ModalForm extends Component {
         return (
             <ModalPopup ref={(ref) => this._modal = ref} onSave={() => this.onSave()}>
                 <View>
+                    <View style={{ marginBottom: 10, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                        <Text>{new Date().toLocaleDateString()}</Text>
+                    </View>
                     <View style={{ marginBottom: 10, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
                         <View style={{ flex: 1 }}>
                             <InputTime

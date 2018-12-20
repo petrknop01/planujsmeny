@@ -27,7 +27,6 @@ import { Colors, FontSize } from "../Utils/variables";
 export default class ModalPopup extends Component {
     _loadingButton = null;
 
-
     state = {
         showModal: false
     }
@@ -95,7 +94,9 @@ export default class ModalPopup extends Component {
                         </Content>
                         <Footer style={{ alignItems: "center", backgroundColor: Colors.header }}>
                             <Button small danger onPress={() => this.setState({ showModal: false })} style={{ marginRight: 10, alignSelf: "center" }}><Text>Zavřít</Text></Button>
+                            {this.props.hideSaveButton? null :
                             <LoadingButton small success ref={(ref) => this._loadingButton = ref}  onPress={() => this.onPressSave()} style={{ marginLeft: 10, alignSelf: "center" }}><Text>Uložit</Text></LoadingButton>
+                            }
                         </Footer>
                     </View>
                 </Container>

@@ -8,7 +8,7 @@
 
 import React, { Component } from 'react';
 import { View, Alert } from "react-native";
-import { Container, Content, Text, Button, Icon, Toast} from "native-base";
+import { Container, Content, Text, Button, Icon, Toast } from "native-base";
 import { Colors, FontSize } from "../Utils/variables";
 import { UrlsFull, UrlsApi } from "./../Utils/urls";
 import { xdateToData, calculateDate } from "./../Utils/functions";
@@ -40,8 +40,8 @@ export default class PlansShiftsScreen extends Component {
   shifts = {};
 
   state = {
-    selectedWp: { id: null, label: "Nevybráno" },
-    listWp: [{ id: null, label: "Nevybráno" }],
+    selectedWp: { id: null, label: "Nahrávám" },
+    listWp: [{ id: null, label: "Nahrávám" }],
     jobs: null,
     wps: null,
     users: null,
@@ -95,7 +95,7 @@ export default class PlansShiftsScreen extends Component {
     Toast.show({
       text: message,
       buttonText: "Ok",
-      duration: 2000,
+      duration: 5000,
       position: "bottom"
     });
   }
@@ -131,15 +131,25 @@ export default class PlansShiftsScreen extends Component {
           return;
         }
 
+        let wpItem;
+
+        this.state.listWp.map((item, i) => {
+          if (item.id == response.IDwp) {
+            wpItem = item;
+            return false;
+          }
+        })
+
         this.setState({
           shifts: this.convertShifts(response, day),
           markedDates: this.convertMarkedDates(),
           refreshing: false,
           lastDate: response.lastForbidenEditationDate,
           IDwp: response.IDwp,
-          wpJobs: response.wpJobs
+          wpJobs: response.wpJobs,
+          selectedWp: wpItem
         },
-          () => this.saveOfflineData()  
+          () => this.saveOfflineData()
         );
       })
       .catch(error => {
@@ -148,16 +158,19 @@ export default class PlansShiftsScreen extends Component {
   }
 
 
-  saveOfflineData(){
-    if(this.state.selectedWp.id == null){
+  saveOfflineData() {
+    if (this.state.selectedWp.id == null) {
       let data = this.state;
       data.date = new Date();
       DataStore.SetMyPlansShifts(data, () => null);
     }
   }
 
-  getOfflineData(){
-    DataStore.GetMyPlansShifts((data) => 
+  getOfflineData() {
+    DataStore.GetMyPlansShifts((data) => {
+      if (data == null) {
+        return;
+      }
       this.setState({
         listWp: data.listWp,
         jobs: data.jobs,
@@ -172,7 +185,8 @@ export default class PlansShiftsScreen extends Component {
         wpJobs: data.wpJobs,
         date: data.date
       })
-    );
+    });
+
   }
 
   convertMarkedDates() {
@@ -236,7 +250,7 @@ export default class PlansShiftsScreen extends Component {
           return;
         }
 
-        let listWp = [{ id: null, label: "Nevybráno" }];
+        let listWp = [];
 
         for (const key in response.wps) {
           if (response.wps.hasOwnProperty(key)) {
@@ -300,42 +314,56 @@ export default class PlansShiftsScreen extends Component {
               const item2 = item[key2];
               switch (type) {
                 case TYPE.notHomeShifts:
-                  if (!this.inArray(this.state.data[strTime][0].notHomeShifts, key2)) {
-                    this.state.data[strTime][0].notHomeShifts.push({
-                      date: new Date(strTime),
-                      id: key2,
-                      userName: this.getUserName(item2.user),
-                      wpName: this.getWorkspaceName(item2.wp)
-                    });
+                  const insertNotHomeShifts = {
+                    date: new Date(strTime),
+                    id: key2,
+                    userName: this.getUserName(item2.user),
+                    wpName: this.getWorkspaceName(item2.wp)
+                  }
+                  const indexNotHomeShifts = this.inArray(this.state.data[strTime][0].notHomeShifts, key2);
+
+                  if (indexNotHomeShifts == -1) {
+                    this.state.data[strTime][0].notHomeShifts.push(insertNotHomeShifts);
+                  } else {
+                    this.state.data[strTime][0].notHomeShifts[indexNotHomeShifts] = (insertNotHomeShifts);
                   }
                   break;
                 case TYPE.absences:
-                  if (!this.inArray(this.state.data[strTime][0].absences, key2)) {
-                    this.state.data[strTime][0].absences.push({
-                      date: new Date(strTime),
-                      id: key2,
-                      userName: this.getUserName(item2.user),
-                      absenceName: this.getAbsenceName(item2.absenceType),
-                      color: this.getAbsenceColor(item2.absenceType),
-                    });
+                  const insertAbsence = {
+                    date: new Date(strTime),
+                    id: key2,
+                    userName: this.getUserName(item2.user),
+                    absenceName: this.getAbsenceName(item2.absenceType),
+                    color: this.getAbsenceColor(item2.absenceType),
+                  };
+
+                  const indexAbsence = this.inArray(this.state.data[strTime][0].absences, key2);
+                  if (indexAbsence == -1) {
+                    this.state.data[strTime][0].absences.push(insertAbsence);
+                  } else {
+                    this.state.data[strTime][0].absences[indexAbsence] = (insertAbsence);
                   }
                   break;
                 case TYPE.shifts:
                   for (const id in item2) {
                     if (item2.hasOwnProperty(id)) {
                       const shift = item2[id];
-                      if (!this.inArray(this.state.data[strTime][0].shifts, id)) {
-                        this.state.data[strTime][0].shifts.push({
-                          date: new Date(strTime),
-                          userName: this.getUserName(shift.user),
-                          jobName: this.getJobName(shift.job),
-                          color: this.getJobsColor(shift.job),
-                          start: shift.start,
-                          end: shift.end,
-                          id: id,
-                          jobId: shift.job,
-                          userId: shift.user
-                        });
+                      const insertShift = {
+                        date: new Date(strTime),
+                        userName: this.getUserName(shift.user),
+                        jobName: this.getJobName(shift.job),
+                        color: this.getJobsColor(shift.job),
+                        start: shift.start,
+                        end: shift.end,
+                        id: shift.id,
+                        jobId: shift.job,
+                        userId: shift.user
+                      }
+                      const indexShift = this.inArray(this.state.data[strTime][0].shifts, shift.id);
+                      if (indexShift == -1) {
+                        this.state.data[strTime][0].shifts.push(insertShift);
+                      } else {
+                        this.state.data[strTime][0].shifts[indexShift] = insertShift;
                       }
                     }
                   }
@@ -352,11 +380,11 @@ export default class PlansShiftsScreen extends Component {
     for (let index = 0; index < array.length; index++) {
       const element = array[index];
       if (element.id == id) {
-        return true;
+        return index;
       }
     }
 
-    return false;
+    return -1;
   }
 
   getUserName(id) {
@@ -417,11 +445,20 @@ export default class PlansShiftsScreen extends Component {
       .then(res => {
         button.endLoading();
         this._calendar.selectDate(new Date(item.date));
+        const strTime = this.timeToString(new Date(item.date));
+        let data = this.state.data;
+        const indexShift = this.inArray(data[strTime][0].shifts, item.id);
+        if(indexShift != -1){
+          data[strTime][0].shifts.splice(indexShift, 1);
+          this.setState({
+            data: data
+          });
+        }
         this.showAlert(res.infoMessages[0][1], res.ok == 0);
       })
       .catch(() => {
-          button.endLoading();
-        });
+        button.endLoading();
+      });
   }
 
 
@@ -430,7 +467,7 @@ export default class PlansShiftsScreen extends Component {
       "Vymazat",
       "Opravdu chcete položku smazat?",
       [
-        { text: 'Ano', onPress: () => this.onDelete(button, item)},
+        { text: 'Ano', onPress: () => this.onDelete(button, item) },
         { text: 'Ne', onPress: () => { }, style: 'cancel' },
       ],
       { cancelable: false }
@@ -438,20 +475,20 @@ export default class PlansShiftsScreen extends Component {
   }
 
 
-  onPressEdit(item){
+  onPressEdit(item) {
     this._modalForm.open(item, this.state.IDwp, item.date, this.getJobsList());
   }
 
-  onPressAdd(item){
+  onPressAdd(item) {
     this._modalForm.open(null, this.state.IDwp, item.date, this.getJobsList());
   }
 
-  getJobsList(){
+  getJobsList() {
     let listJobs = [{ id: null, label: "Nevybráno" }];
     for (const key in this.state.wpJobs) {
       const id = this.state.wpJobs[key];
-      if (this.state.jobs.hasOwnProperty("id"+id)) {
-        const element = this.state.jobs["id"+id];
+      if (this.state.jobs.hasOwnProperty("id" + id)) {
+        const element = this.state.jobs["id" + id];
         listJobs.push({ id: element.id, label: element.name });
       }
     }
@@ -478,7 +515,8 @@ export default class PlansShiftsScreen extends Component {
   }
 
   onPressComment(item) {
-    this._modalPlansComments.open(item);
+
+    this._modalPlansComments.open(item, this.noEdit(item.date));
   }
 
   noEdit(actualDate) {
@@ -489,7 +527,7 @@ export default class PlansShiftsScreen extends Component {
     return actualDate < date;
   }
 
-  onSaveDone(date,res){
+  onSaveDone(date, res) {
     this._calendar.selectDate(date);
     setTimeout(() => {
       this.showAlert(res.infoMessages[0][1], res.ok == 0);
@@ -531,7 +569,7 @@ export default class PlansShiftsScreen extends Component {
         />
         <ModalPlansAbsence ref={(ref) => this._modalPlansAbsence = ref} />
         <ModalPlansComment ref={(ref) => this._modalPlansComments = ref} />
-        <ModalForm ref={(ref) => this._modalForm = ref} navigation={this.props.navigation} onSaveDone={(date,res) => this.onSaveDone(date,res)}/>
+        <ModalForm ref={(ref) => this._modalForm = ref} navigation={this.props.navigation} onSaveDone={(date, res) => this.onSaveDone(date, res)} />
         <ModalPopup ref={(ref) => this._modal = ref} onSave={() => this._modal.closeModal()}>
           <View>
             <View style={{ marginBottom: 10 }}>

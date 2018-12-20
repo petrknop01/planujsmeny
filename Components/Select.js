@@ -108,7 +108,7 @@ export default class Select extends Component {
                             </View>
                             {this.props.disabled? null :
                             <View style={{ paddingLeft: 10, marginTop: -3 }}>
-                                <Icon name="arrow-down"/>
+                                <Icon name="ios-arrow-down"/>
                             </View>}
                         </View>
                     </View>

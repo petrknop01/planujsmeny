@@ -74,7 +74,10 @@ export default class CustomSelectUser extends Component {
                     <ScrollView>
                         {this.props.items.map((item, i) =>
                             <TouchableOpacity onPress={() => this.onPressSelect(item.id)} key={i} style={{ borderBottomColor: 'rgba(0, 0, 0, 0.1)', borderBottomWidth: 1, padding: 15 }}>
-                                <View><Text style={{ color: (this.props.selected == item.id ? Colors.orange : "black") }}>{item.name} {item.availText}</Text></View>
+                                <View style={{justifyContent: "space-between", alignItems: "flex-end", flexDirection: "row"}}>
+                                    <Text style={{ color: (this.props.selected == item.id ? Colors.orange : "black") }}>{item.name}</Text>
+                                    <Text style={{fontSize: FontSize.small}}>{item.availText}</Text>
+                                </View>
                             </TouchableOpacity>
                         )}
                     </ScrollView>
@@ -127,7 +130,7 @@ export default class CustomSelectUser extends Component {
                             </View>
                             {this.props.disabled? null :
                             <View style={{ paddingLeft: 10, marginTop: -3 }}>
-                                <Icon name="arrow-down"/>
+                                <Icon name="ios-arrow-down"/>
                             </View>}
                         </View>
                     </View>
