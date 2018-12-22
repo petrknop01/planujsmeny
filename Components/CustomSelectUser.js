@@ -47,6 +47,34 @@ export default class CustomSelectUser extends Component {
         this.setState({ showList: !this.state.showList })
     }
 
+    getBackground(item){
+        if(item.work == "1"){
+            return "red";
+        }
+
+        if(item.avail == "0"){
+            return "pink";
+        }
+
+        return "white";
+    }
+
+    getSymbol(item){
+        if(item.pp == "1" && item.pa == "1" ){
+            return " (<-p->)";
+        }
+
+        if(item.pp == "1"){
+            return " (<-p)";
+        }
+
+        if(item.pa == "1" ){
+            return " (p->)";
+        }
+
+        return "";
+    }
+
 
     renderList() {
         return (
@@ -74,8 +102,12 @@ export default class CustomSelectUser extends Component {
                     <ScrollView>
                         {this.props.items.map((item, i) =>
                             <TouchableOpacity onPress={() => this.onPressSelect(item.id)} key={i} style={{ borderBottomColor: 'rgba(0, 0, 0, 0.1)', borderBottomWidth: 1, padding: 15 }}>
-                                <View style={{justifyContent: "space-between", alignItems: "flex-end", flexDirection: "row"}}>
-                                    <Text style={{ color: (this.props.selected == item.id ? Colors.orange : "black") }}>{item.name}</Text>
+                                <View style={{justifyContent: "space-between", alignItems: "flex-end", flexDirection: "row", backgroundColor: this.getBackground(item)}}>
+                                    <Text style={{ color: (this.props.selected == item.id ? Colors.orange : "black")}}>
+                                        {item.prio} {item.name}
+                                        {item.max == "1" ? " (M)":""}
+                                        {this.getSymbol(item)}
+                                    </Text>
                                     <Text style={{fontSize: FontSize.small}}>{item.availText}</Text>
                                 </View>
                             </TouchableOpacity>
