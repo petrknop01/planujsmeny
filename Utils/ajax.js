@@ -6,16 +6,16 @@ import UrlsApi from "./urls";
 class Ajax {
     isConnected = true;
 
-    constructor() {
-        NetInfo.isConnected.fetch((isConnected) => this.isConnected = isConnected)
-        NetInfo.isConnected.addEventListener('connectionChange', (isConnected) => this.isConnected = isConnected);
-    }
+    // constructor() {
+    //     NetInfo.isConnected.fetch((isConnected) => this.isConnected = isConnected)
+    //     NetInfo.isConnected.addEventListener('connectionChange', (isConnected) => this.isConnected = isConnected);
+    // }
 
     get = (adresa, data, cookies) => {
         console.log(adresa);
-        if (!this.isConnected) {
-            return Promise.reject(new Error('Není připojení k internetu'))
-        }
+        // if (!this.isConnected) {
+        //     return Promise.reject(new Error('Není připojení k internetu'))
+        // }
 
         let dataArr = [];
         for (const key in data) {
@@ -53,9 +53,9 @@ class Ajax {
 
     post = (adresa, data, cookies) => {
         console.log(adresa);
-        if (!this.isConnected) {
-            return Promise.reject(new Error('Není připojení k internetu'))
-        }
+        // if (!this.isConnected) {
+        //     return Promise.reject(new Error('Není připojení k internetu'))
+        // }
 
         let formData = new FormData();
         for (const key in data) {

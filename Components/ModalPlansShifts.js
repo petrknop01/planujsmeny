@@ -5,9 +5,9 @@ import { Container, Header, Title, Content, Footer, FooterTab, Button, Left, Rig
 import { invertColor } from "../Utils/functions";
 import { Colors, FontSize, DayNamesShort } from "../Utils/variables";
 
-function Absence({ item }) {
+function PlannedShifts({ item }) {
     return (
-        <View
+<View
             style={{
                 borderRadius: 5,
                 overflow: "hidden",
@@ -15,45 +15,25 @@ function Absence({ item }) {
                 marginBottom: 10,
                 flex: 1,
             }}>
-            <Text style={{ fontWeight: "bold", backgroundColor: item.color, padding: 10, color: invertColor(item.color, true) }}>Absence: {item.userName}</Text>
+            <Text style={{ fontWeight: "bold", backgroundColor: item.color, padding: 10, color: invertColor(item.color, true) }}>{item.start} - {item.end}</Text>
             <View style={{ padding: 10 }}>
-                <Text style={{ fontWeight: "bold", paddingBottom: 5 }} numberOfLines={1} ellipsizeMode="tail" >{item.absenceName}</Text>
+                <Text style={{ fontWeight: "bold", paddingBottom: 5 }} numberOfLines={1} ellipsizeMode="tail" >{item.jobName}</Text>
+                <Text style={{ fontSize: FontSize.small }} numberOfLines={1} ellipsizeMode="tail">{item.wpName}</Text>
             </View>
         </View>
     );
 }
 
-function NotHomeShifts({item}) {
-    return (
-        <View
-            style={{
-                borderRadius: 5,
-                overflow: "hidden",
-                backgroundColor: "white",
-                marginBottom: 10,
-                flex: 1,
-            }}>
-            <Text style={{ fontWeight: "bold", padding: 10 }}>{item.userName}</Text>
-            <View style={{ padding: 10 }}>
-                <Text style={{ fontWeight: "bold", paddingBottom: 5 }} numberOfLines={1} ellipsizeMode="tail" >{item.wpName}</Text>
-            </View>
-        </View>
-    );
-}
-
-
-export default class ModalPlansAbsence extends Component {
+export default class ModalPlansShifts extends Component {
     state={
         open: false,
-        absences: [],
-        home: [],
+        plannedShifts: [],
     }
 
     open(item){
         this.setState({
             open: true,
-            absences: item.absences ? item.absences : [],
-            home: item.notHomeShifts ? item.notHomeShifts : []
+            plannedShifts: item.plannedShifts,
         });
     }
 
@@ -71,7 +51,7 @@ export default class ModalPlansAbsence extends Component {
                     <Header>
                         <Left />
                         <Body>
-                            <Title>Doma</Title>
+                            <Title>Plánované směny</Title>
                         </Body>
                         <Right>
                             <Button transparent primary onPress={() => this.setState({ open: false })}><Text>Zavřít</Text></Button>
@@ -79,12 +59,11 @@ export default class ModalPlansAbsence extends Component {
                     </Header>
                     <Content style={{padding: 15, backgroundColor: Colors.lightGray}}>
                         {
-                            this.state.absences.length == 0 && this.state.home.length == 0 ? 
-                                <Text>Nikdo nebude doma</Text> :
+                            this.state.plannedShifts.length == 0 ? 
+                                <Text>Žádná naplánovaná směna</Text> :
                                 null
                         }
-                        {this.state.absences.map((item,i) => <Absence item={item} key={i} />)}
-                        {this.state.home.map((item,i) => <NotHomeShifts item={item} key={i} />)}
+                        {this.state.plannedShifts.map((item,i) => <PlannedShifts item={item} key={i} />)}
                     </Content>
                 </Container>
             </Modal>

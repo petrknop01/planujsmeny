@@ -113,12 +113,26 @@ export default class HomeScreen extends Component {
     this.setState({
       shift: shifts,
       clock: response.clockInfo.clockInInfo,
-      shiftRequirements: response.shiftRequirements,
+      shiftRequirements: response.shiftReq,
       currentlyAtWork: response.currentlyAtWork,
       loading: false,
       savedDate: response.savedDate,
       wpNames: response.wpNames
     }, () => callback ? callback() : null)
+
+    this.props.navigation.getScreenProps().setMenuType(this.getMenuType(response.shiftReq));
+  }
+
+  getMenuType(shiftRequirements){
+    if(shiftRequirements == null){
+      return 0;
+    }
+
+    if(shiftRequirements.canEdit == 0){
+      return 1;
+    }
+
+    return 2;
   }
 
   renderPerson() {
@@ -354,20 +368,21 @@ export default class HomeScreen extends Component {
               {this.renderShifts()}
             </View>
           </View>
-          <View>
-            <Divider title="Volné směny" />
-            <View style={{ backgroundColor: Colors.lightGray }}>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('FreeShiftsDrawer')}>
-                <View style={{ justifyContent: "space-between", padding: 10, backgroundColor: "white", borderRadius: 5, margin: 10, flexDirection: "row", alignItems: "center" }}>
-                  <View>
-                    <Text style={{ fontSize: FontSize.big }}>V tomto měsíci je <Text style={{ fontSize: FontSize.big, color: Colors.orange, fontWeight: "bold" }}>{this.state.shiftRequirements.nextMcount}</Text> volných směn.</Text>
-                    <Text style={{ fontSize: FontSize.big }}>V následujícím je <Text style={{ fontSize: FontSize.big, color: Colors.orange, fontWeight: "bold" }}>{this.state.shiftRequirements.nextMcount}</Text> volných směn.</Text>
+          { this.state.shiftRequirements == null || 
+            (this.state.shiftRequirements != null && this.state.shiftRequirements.canEdit == 0) ?
+            null : 
+            <View>
+              <Divider title="Volné směny" />
+              <View style={{ backgroundColor: Colors.lightGray }}>
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('FreeShiftsDrawer')}>
+                  <View style={{ justifyContent: "space-between", padding: 10, backgroundColor: "white", borderRadius: 5, margin: 10, flexDirection: "row", alignItems: "center" }}>
+                      <Text>{this.state.shiftRequirements.thisMname} - {this.state.shiftRequirements.thisMcount}</Text><Text> {this.state.shiftRequirements.nextMname} - {this.state.shiftRequirements.nextMcount}</Text>
+                    <Icon name="arrow-dropright" style={{ color: Colors.orange }} />
                   </View>
-                  <Icon name="arrow-dropright" style={{ color: Colors.orange }} />
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          }
           <View>
             <Divider title="Aktuálně pracuje" />
             <View style={{ backgroundColor: Colors.lightGray }}>

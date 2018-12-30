@@ -54,7 +54,7 @@ export class UserSelect extends Component {
     }
 
     loadUsers() {
-        let { address, cookie } = this.props.navigation.getScreenProps();
+        let { address, cookie, relogin } = this.props.navigation.getScreenProps();
         Ajax.get(address + UrlsApi.users, {}, cookie)
             .then(response => response.json())
             .then(response => {

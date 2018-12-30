@@ -36,7 +36,12 @@ export default class Calendar extends Component {
         if(this.props.offline){
             return true;
         }
-        return true ;
+
+        if(this.props.rowHasChanged){
+            return this.props.rowHasChanged(r1,r2);
+        }
+
+        return JSON.stringify(r1) !== JSON.stringify(r2) ;
     }
 
     renderDay(day, item){

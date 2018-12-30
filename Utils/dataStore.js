@@ -9,6 +9,7 @@ const _myShiftsKey = _app + ":MyShifts";
 const _myHome =  _app + ":Home";
 const _myTimes =  _app + ":MyTimes";
 const _myPlansShift =  _app + ":MyPlans";
+const _myFreeShift=  _app + ":MyFreeShift";
 
 export default class DataStore {
   static GetBaseData(callback) {
@@ -105,5 +106,23 @@ export default class DataStore {
 
   static SetMyPlansShifts(data, callback){
     AsyncStorage.setItem(_myPlansShift, JSON.stringify(data), () => callback());
+  }
+
+  static GetMyFreeShifts(callback){
+    AsyncStorage.getItem(_myFreeShift, (error, value) => {
+      if (error) {
+        callback(null)
+      } else {
+        if (value) {
+          callback(JSON.parse(value));
+        } else {
+          callback(null);
+        }
+      }
+    });
+  }
+
+  static SetMyFreeShifts(data, callback){
+    AsyncStorage.setItem(_myFreeShift, JSON.stringify(data), () => callback());
   }
 }

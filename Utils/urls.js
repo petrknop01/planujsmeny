@@ -25,5 +25,11 @@ export const UrlsApi = {
     removeShift: "/index.php?o=ajax&ajax=appPlanShifts&a=removeShift",
     editShift: "/index.php?o=ajax&ajax=appPlanShifts&a=editShift",
     addShift: "/index.php?o=ajax&ajax=appPlanShifts&a=addShift",
-    getShiftsUser: "/index.php?o=ajax&ajax=appPlanShifts&a=getUsers"
+    getShiftsUser: "/index.php?o=ajax&ajax=appPlanShifts&a=getUsers",
+    getUnassignedShifts: "/index.php?o=ajax&ajax=appUnassignedShifts&a=loadUnassShifts",
+    appUnassignedShiftsNewRequest: "/index.php?o=ajax&ajax=appUnassignedShifts&a=newRequest",
+    appUnassignedShiftsDeleteRequest: "/index.php?o=ajax&ajax=appUnassignedShifts&a=deleteRequest",
+    getUnassignedShiftsForManager: "/index.php?o=ajax&ajax=appUnassignedShifts&a=loadUnassShiftsManager",
+    appUnassignedShiftsAcceptReq: "/index.php?o=ajax&ajax=appUnassignedShifts&a=acceptReq",
+    appUnassignedShiftsCancelReq: "/index.php?o=ajax&ajax=appUnassignedShifts&a=cancelReq",
 }

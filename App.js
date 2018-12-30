@@ -26,7 +26,8 @@ export default class App extends Component {
     username: null,
     appKey: null,
     cookie: null,
-    loading: true
+    loading: true,
+    menuType: 0,
   }
 
   componentWillMount() {
@@ -82,7 +83,11 @@ export default class App extends Component {
     return (
       this.state.userID == null ?
         <LoginScreen loginOk={(userID, username, address, appKey, cookie) => this.setState({ userID, username, address, appKey, cookie })} /> :
-        <Router screenProps={{ relogin: (callback) => this.relogin(callback), logOut: () => this.setState({ userID: null, username: null, appKey: null, address: null }), ...this.state }} />
+        <Router screenProps={{
+           setMenuType: (type) => this.setState({menuType: type}),
+           relogin: (callback) => this.relogin(callback), 
+           logOut: () => this.setState({ userID: null, username: null, appKey: null, address: null }), 
+           ...this.state }} />
     );
   }
 

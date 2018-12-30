@@ -4,8 +4,7 @@ import FreeShiftsScreen from "./Screens/FreeShiftsScreen"
 import MyShiftsScreen from "./Screens/MyShiftsScreen"
 import MyTimesScreen from "./Screens/MyTimesScreen"
 import PlansShiftsScreen from "./Screens/PlansShiftsScreen"
-import LoginScreen from "./Screens/LoginScreen"
-import LoadingScreen from "./Screens/LoadingScreen"
+import Menu from "./Components/Menu"
 import React, { Component } from 'react';
 
 import { View } from "react-native";
@@ -25,16 +24,20 @@ const headerSetting =
   }
 }
 
-const DrawerMenu = (props) => (
-  <Content>
+
+const DrawerMenu = (props) => {
+
+  return (
+    <Content>
     <SafeAreaView style={{ flex: 1 }} forceInset={{ top: 'always', horizontal: 'never' }}>
-      <DrawerItems {...props} />
+      <Menu {...props}  menuType={props.screenProps.menuType}/>
       <Button onPress={() => props.screenProps.logOut()} danger small block style={{marginTop: 50, marginHorizontal: 20}}>
         <Text>Odhlásit</Text>
       </Button>
     </SafeAreaView>
   </Content>
-);
+  );
+}
 
 const DrawerIcon = (props) => {
   return <View><Button transparent light onPress={() => props.navigation.toggleDrawer()}><Icon name="menu" /></Button></View>
@@ -58,9 +61,9 @@ function initStack(initRoute) {
         screen: FreeShiftsAgreeScreen,
         navigationOptions: ({ navigation, screenProps }) => {
           return {
-            title: "Volné směny - potvrzení",
+            title: "Seznam žádostí",
             ...headerSetting,
-            headerRight: null,
+            headerRight: <DrawerIcon navigation={navigation} />,
             headerLeft: null,
           }
         }
@@ -146,6 +149,14 @@ const Router = createDrawerNavigator(
         }
       }
     },
+    PlansShiftsDrawer: {
+      screen: initStack("PlansShifts"),
+      navigationOptions: ({ navigation, screenProps }) => {
+        return {
+          drawerLabel: 'Plán směn'
+        }
+      }
+    },
     FreeShiftsDrawer: {
       screen: initStack("FreeShifts"),
       navigationOptions: ({ navigation, screenProps }) => {
@@ -154,11 +165,11 @@ const Router = createDrawerNavigator(
         }
       }
     },
-    PlansShiftsDrawer: {
-      screen: initStack("PlansShifts"),
+    FreeShiftsAgreeDrawer: {
+      screen: initStack("FreeShiftsAgree"),
       navigationOptions: ({ navigation, screenProps }) => {
         return {
-          drawerLabel: 'Plán směn'
+          drawerLabel: 'Seznam žádostí'
         }
       }
     },
