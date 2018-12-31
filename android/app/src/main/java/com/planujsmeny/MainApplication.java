@@ -3,6 +3,7 @@ package com.planujsmeny;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.psykar.cookiemanager.CookieManagerPackage;
@@ -26,6 +27,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactNativePushNotificationPackage(),
             new RNDeviceInfo(),
             new SplashScreenReactPackage(),
             new CookieManagerPackage()

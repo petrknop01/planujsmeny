@@ -10,6 +10,7 @@ const _myHome =  _app + ":Home";
 const _myTimes =  _app + ":MyTimes";
 const _myPlansShift =  _app + ":MyPlans";
 const _myFreeShift=  _app + ":MyFreeShift";
+const _notificationSetting =  _app + ":NotificationSetting";
 
 export default class DataStore {
   static GetBaseData(callback) {
@@ -124,5 +125,39 @@ export default class DataStore {
 
   static SetMyFreeShifts(data, callback){
     AsyncStorage.setItem(_myFreeShift, JSON.stringify(data), () => callback());
+  }
+
+
+  static GetNotificationSetting(callback){
+    let defaultSetting = {
+      longTermStart: {
+        enabled: true,
+        value: 24
+      },
+      shortTermStart: {
+        enabled: true,
+        value: 60
+      },
+      endTerm: {
+        enabled: false,
+        value: 60
+      }
+    }
+
+    AsyncStorage.getItem(_notificationSetting, (error, value) => {
+      if (error) {
+        callback(defaultSetting)
+      } else {
+        if (value) {
+          callback(JSON.parse(value));
+        } else {
+          callback(defaultSetting);
+        }
+      }
+    });
+  }
+
+  static SetNotificationSetting(data, callback){
+    AsyncStorage.setItem(_notificationSetting, JSON.stringify(data), () => callback());
   }
 }

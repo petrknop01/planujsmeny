@@ -29,13 +29,29 @@ const DrawerMenu = (props) => {
 
   return (
     <Content>
-    <SafeAreaView style={{ flex: 1 }} forceInset={{ top: 'always', horizontal: 'never' }}>
-      <Menu {...props}  menuType={props.screenProps.menuType}/>
-      <Button onPress={() => props.screenProps.logOut()} danger small block style={{marginTop: 50, marginHorizontal: 20}}>
-        <Text>Odhlásit</Text>
-      </Button>
-    </SafeAreaView>
-  </Content>
+      <SafeAreaView style={{ flex: 1 }} forceInset={{ top: 'always', horizontal: 'never' }}>
+        <Menu {...props} menuType={props.screenProps.menuType} />
+        <View style={{ marginTop: 50, marginHorizontal: 20, flexDirection: "row", justifyContent:"space-between" }}>
+          <Button 
+            danger 
+            small 
+            block 
+            onPress={() => props.screenProps.logOut()}>
+            <Text>Odhlásit</Text>
+          </Button>
+
+          <Button 
+           success 
+           small
+           block 
+            onPress={() => props.screenProps.showSetting()}
+           >
+          <Text>Nastavení</Text>
+          </Button>
+        </View>
+
+      </SafeAreaView>
+    </Content>
   );
 }
 
@@ -172,7 +188,7 @@ const Router = createDrawerNavigator(
           drawerLabel: 'Seznam žádostí'
         }
       }
-    },
+    }
   },
   {
     contentComponent: DrawerMenu,

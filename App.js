@@ -13,11 +13,11 @@ import { Container, StyleProvider, Root } from "native-base";
 import getTheme from './native-base-theme/components';
 import platform from './native-base-theme/variables/platform';
 import DataStore from "./Utils/dataStore";
-import SplashScreen from 'react-native-splash-screen'
 import LoadingScreen from "./Screens/LoadingScreen"
+import SettingScreen from "./Screens/SettingScreen"
 import Ajax from "./Utils/ajax";
 import { UrlsApi } from "./Utils/urls";
-
+import Notification from "./Utils/notification";
 
 export default class App extends Component {
   state = {
@@ -28,6 +28,12 @@ export default class App extends Component {
     cookie: null,
     loading: true,
     menuType: 0,
+  }
+  
+  notification = new Notification();
+
+  componentDidMount(){
+    this.notification.scheduleNotification();
   }
 
   componentWillMount() {
@@ -68,7 +74,7 @@ export default class App extends Component {
           }
         });
       })
-      .catch(error => {
+      .catch(() => {
         callback();
       });
   }
@@ -87,6 +93,7 @@ export default class App extends Component {
            setMenuType: (type) => this.setState({menuType: type}),
            relogin: (callback) => this.relogin(callback), 
            logOut: () => this.setState({ userID: null, username: null, appKey: null, address: null }), 
+           showSetting: () => this._settingScreen.open(),
            ...this.state }} />
     );
   }
@@ -99,6 +106,7 @@ export default class App extends Component {
       <Root>
         <Container>
           {this.renderInner()}
+          <SettingScreen ref={ref => this._settingScreen = ref}/>
         </Container>
         </Root>
       </StyleProvider>

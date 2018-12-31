@@ -14,6 +14,7 @@
 		00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302E41ABCB9EE00DB3ED1 /* libRCTVibration.a */; };
 		00E356F31AD99517003FC87E /* PlanujsmenyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* PlanujsmenyTests.m */; };
 		05CCB0E5451C4A23982426DB /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EBC07744F5204BA681EAAB72 /* Feather.ttf */; };
+		0A789FFE21DA36A600E33ED8 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A789FDE21DA366700E33ED8 /* libRCTPushNotification.a */; };
 		10CC8D4C9FB74AE7B8FDBB6E /* libRNDeviceInfo-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EF7D1B98F0774EF7BC494A13 /* libRNDeviceInfo-tvOS.a */; };
 		133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C398B91ACF4ADC00677621 /* libRCTLinking.a */; };
 		134E2B2D48504089A660A6C7 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B7EDBAC6E0274C9AB6F20AC0 /* Octicons.ttf */; };
@@ -115,6 +116,27 @@
 			proxyType = 2;
 			remoteGlobalIDString = E72EC1401F7ABB5A0001BC90;
 			remoteInfo = "RNDeviceInfo-tvOS";
+		};
+		0A789FDD21DA366700E33ED8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A789FCC21DA366600E33ED8 /* RCTPushNotification.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTPushNotification;
+		};
+		0A789FDF21DA366700E33ED8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A789FCC21DA366600E33ED8 /* RCTPushNotification.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3D05745F1DE6004600184BB4;
+			remoteInfo = "RCTPushNotification-tvOS";
+		};
+		0A78A00F21DA42EC00E33ED8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 83CBBA2D1A601D0E00E9B192;
+			remoteInfo = React;
 		};
 		0AAAB938213ECE4C00FB6289 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -374,6 +396,7 @@
 		00E356EE1AD99517003FC87E /* PlanujsmenyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PlanujsmenyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* PlanujsmenyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlanujsmenyTests.m; sourceTree = "<group>"; };
+		0A789FCC21DA366600E33ED8 /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Planujsmeny.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Planujsmeny.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -438,6 +461,7 @@
 				00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */,
 				139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
+				0A789FFE21DA36A600E33ED8 /* libRCTPushNotification.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				9D92E0C6AA9147319E1711C1 /* libRNCookieManagerIOS.a in Frameworks */,
@@ -537,6 +561,15 @@
 			children = (
 				0A4D179221A5632000CBFB14 /* libRNDeviceInfo.a */,
 				0A4D179421A5632000CBFB14 /* libRNDeviceInfo-tvOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0A789FCD21DA366600E33ED8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0A789FDE21DA366700E33ED8 /* libRCTPushNotification.a */,
+				0A789FE021DA366700E33ED8 /* libRCTPushNotification-tvOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -676,6 +709,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				0A789FCC21DA366600E33ED8 /* RCTPushNotification.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -773,6 +807,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				0A78A01021DA42EC00E33ED8 /* PBXTargetDependency */,
 			);
 			name = Planujsmeny;
 			productName = "Hello World";
@@ -828,6 +863,9 @@
 						CreatedOnToolsVersion = 6.2;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
+					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = 522BJMAYTA;
+					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
 						ProvisioningStyle = Automatic;
@@ -878,6 +916,10 @@
 				{
 					ProductGroup = 00C302D41ABCB9D200DB3ED1 /* Products */;
 					ProjectRef = 00C302D31ABCB9D200DB3ED1 /* RCTNetwork.xcodeproj */;
+				},
+				{
+					ProductGroup = 0A789FCD21DA366600E33ED8 /* Products */;
+					ProjectRef = 0A789FCC21DA366600E33ED8 /* RCTPushNotification.xcodeproj */;
 				},
 				{
 					ProductGroup = 139105B71AF99BAD00B5F7CC /* Products */;
@@ -970,6 +1012,20 @@
 			fileType = archive.ar;
 			path = "libRNDeviceInfo-tvOS.a";
 			remoteRef = 0A4D179321A5632000CBFB14 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0A789FDE21DA366700E33ED8 /* libRCTPushNotification.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTPushNotification.a;
+			remoteRef = 0A789FDD21DA366700E33ED8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0A789FE021DA366700E33ED8 /* libRCTPushNotification-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libRCTPushNotification-tvOS.a";
+			remoteRef = 0A789FDF21DA366700E33ED8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0AAAB939213ECE4C00FB6289 /* libRNCookieManagerIOS.a */ = {
@@ -1335,6 +1391,11 @@
 			target = 13B07F861A680F5B00A75B9A /* Planujsmeny */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
+		0A78A01021DA42EC00E33ED8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = React;
+			targetProxy = 0A78A00F21DA42EC00E33ED8 /* PBXContainerItemProxy */;
+		};
 		2D02E4921E0B4A5D006451C7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 2D02E47A1E0B4A5D006451C7 /* Planujsmeny-tvOS */;
@@ -1424,6 +1485,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = 522BJMAYTA;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-cookies/ios/RNCookieManagerIOS",
@@ -1437,6 +1499,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = cz.planujsmeny;
 				PRODUCT_NAME = Planujsmeny;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1447,6 +1510,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 522BJMAYTA;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-cookies/ios/RNCookieManagerIOS",
@@ -1460,6 +1524,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = cz.planujsmeny;
 				PRODUCT_NAME = Planujsmeny;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

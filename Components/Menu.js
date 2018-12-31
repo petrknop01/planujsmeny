@@ -3,7 +3,6 @@ import { View, StyleSheet } from 'react-native';
 import { SafeAreaView, } from 'react-navigation';
 import { Text, Accordion,Icon } from "native-base";
 import TouchableItem from 'react-navigation/src/views/TouchableItem'
-import Divider from "./Divider";
 import { Colors } from '../Utils/variables';
 /**
  * Component that renders the navigation list in the drawer.
