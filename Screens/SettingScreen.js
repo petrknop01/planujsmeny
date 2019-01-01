@@ -67,7 +67,10 @@ export default class SettingScreen extends Component {
     }
 
     onPressSave() {
-        DataStore.SetNotificationSetting(this.state.data, () => { this.setState({ open: false }) });
+        DataStore.SetNotificationSetting(this.state.data, () => { 
+            this.setState({ open: false }); 
+            this.props.scheduleNotification();
+        });
     }
 
     onChange(dataKey, value) {
@@ -101,7 +104,7 @@ export default class SettingScreen extends Component {
                             data={this.state.data.longTermStart}
                             minValue={2}
                             maxValue={48}
-                            unit="h."
+                            unit="hod."
                             onChange={(value) => this.onChange("longTermStart", value)}
                         />
                         <SettingItem

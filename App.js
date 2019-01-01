@@ -33,7 +33,6 @@ export default class App extends Component {
   notification = new Notification();
 
   componentDidMount(){
-    this.notification.scheduleNotification();
   }
 
   componentWillMount() {
@@ -49,9 +48,25 @@ export default class App extends Component {
           username: data.UserName,
           cookie: data.Cookie,
           appKey: data.AppKey,
-        }, () => this.relogin(() => this.setState({loading: false})));
+        }, () => this.relogin(() => {
+          this.setState({loading: false});
+          if(this.state.userID){
+            this.scheduleNotification();
+          }else{
+            this.clearNotification();
+          }
+        }));
       }
     });
+  }
+
+  scheduleNotification(){
+    const { address, cookie} = this.state;
+    this.notification.scheduleNotification(address, cookie, this.relogin);
+  }
+
+  clearNotification(){
+    this.notification.clearNotification();
   }
 
   relogin(callback = () => null) {
@@ -70,7 +85,7 @@ export default class App extends Component {
               ServerAddress: address,
               AppKey: appKey,
               Cookie: cookie
-            }, () =>this.setState({ cookie: cookie }, () => callback()));
+            }, () => this.setState({ cookie: cookie }, () => callback()));
           }
         });
       })
@@ -92,7 +107,10 @@ export default class App extends Component {
         <Router screenProps={{
            setMenuType: (type) => this.setState({menuType: type}),
            relogin: (callback) => this.relogin(callback), 
-           logOut: () => this.setState({ userID: null, username: null, appKey: null, address: null }), 
+           logOut: () => {
+             this.clearNotification();
+             this.setState({ userID: null, username: null, appKey: null, address: null })
+            }, 
            showSetting: () => this._settingScreen.open(),
            ...this.state }} />
     );
@@ -106,7 +124,7 @@ export default class App extends Component {
       <Root>
         <Container>
           {this.renderInner()}
-          <SettingScreen ref={ref => this._settingScreen = ref}/>
+          <SettingScreen ref={ref => this._settingScreen = ref} scheduleNotification={() => this.scheduleNotification()}/>
         </Container>
         </Root>
       </StyleProvider>
