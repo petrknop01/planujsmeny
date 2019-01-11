@@ -127,7 +127,7 @@ export default class MyTimesScreen extends Component {
     //   markedDates: {}
     // });
 
-    Ajax.post(address + url + "&empl="+this.state.selectedUserId, data, cookie)
+    Ajax.post(address + url + "&empl=" + this.state.selectedUserId, data, cookie)
       .then(response => response.json())
       .then(res => {
         this._calendar.selectDate(this.state.editedDate);
@@ -137,8 +137,8 @@ export default class MyTimesScreen extends Component {
           }, 250));
       })
       .catch(() => {
-          this._modal.closeModal();
-        });
+        this._modal.closeModal();
+      });
   }
 
 
@@ -192,7 +192,7 @@ export default class MyTimesScreen extends Component {
   saveOfflineData(response) {
     let { userID } = this.props.navigation.getScreenProps();
 
-    if(this.state.selectedUserId !== userID){
+    if (this.state.selectedUserId !== userID) {
       return;
     }
 
@@ -223,8 +223,8 @@ export default class MyTimesScreen extends Component {
     })
   }
 
-  margeAvails(oldDates, newDates){
-    let result = { ...oldDates, ...newDates};
+  margeAvails(oldDates, newDates) {
+    let result = { ...oldDates, ...newDates };
     for (const key in result) {
       if (newDates.hasOwnProperty(key)) {
         result[key] = newDates[key];
@@ -335,8 +335,8 @@ export default class MyTimesScreen extends Component {
         this.showAlert(res.info, res.ok == 0);
       })
       .catch(() => {
-          button.endLoading();
-        });
+        button.endLoading();
+      });
   }
 
 
@@ -345,7 +345,7 @@ export default class MyTimesScreen extends Component {
       "Vymazat",
       "Opravdu chcete položku smazat?",
       [
-        { text: 'Ano', onPress: () => this.onDelete(button, item)},
+        { text: 'Ano', onPress: () => this.onDelete(button, item) },
         { text: 'Ne', onPress: () => { }, style: 'cancel' },
       ],
       { cancelable: false }
@@ -469,6 +469,9 @@ export default class MyTimesScreen extends Component {
         />
         <ModalPopup ref={(ref) => this._modal = ref} onSave={() => this.onSave()}>
           <View>
+            <View style={{ marginBottom: 10, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+              <Text>{new Date(this.state.editedDate).toLocaleDateString()}</Text>
+            </View>
             <View style={{ marginBottom: 10, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
               <View style={{ flex: 1 }}>
                 <InputTime

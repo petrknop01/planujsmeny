@@ -372,9 +372,9 @@ export default class HomeScreen extends Component {
             (this.state.shiftRequirements != null && this.state.shiftRequirements.canEdit == 0) ?
             null : 
             <View>
-              <Divider title="Volné směny" />
+              <Divider title="Žádosti o volné směny" />
               <View style={{ backgroundColor: Colors.lightGray }}>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('FreeShiftsDrawer')}>
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('FreeShiftsAgreeDrawer')}>
                   <View style={{ justifyContent: "space-between", padding: 10, backgroundColor: "white", borderRadius: 5, margin: 10, flexDirection: "row", alignItems: "center" }}>
                       <Text>{this.state.shiftRequirements.thisMname} - {this.state.shiftRequirements.thisMcount}</Text><Text> {this.state.shiftRequirements.nextMname} - {this.state.shiftRequirements.nextMcount}</Text>
                     <Icon name="arrow-dropright" style={{ color: Colors.orange }} />

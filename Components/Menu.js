@@ -103,11 +103,11 @@ class Menu extends Component {
 
 
       if (menuType == 0 && (route.key == "FreeShiftsDrawer" || route.key == "FreeShiftsAgreeDrawer")) {
-        return null;
+        break;
       }
 
       if (menuType == 1 && route.key == "FreeShiftsAgreeDrawer") {
-        return null;
+        break;
       }
 
       if (menuType == 2 && renderDivider && (route.key == "FreeShiftsDrawer" || route.key == "FreeShiftsAgreeDrawer")) {

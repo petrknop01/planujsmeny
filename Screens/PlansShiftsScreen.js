@@ -60,6 +60,7 @@ export default class PlansShiftsScreen extends Component {
 
   reloadData() {
     _selectedDate = new Date();
+    this.data = {};
 
     this.setState({
       markedDates: {},
@@ -461,7 +462,7 @@ export default class PlansShiftsScreen extends Component {
   onPressDelete(button, item) {
     Alert.alert(
       "Vymazat",
-      "Opravdu chcete položku smazat?",
+      "Opravdu chcete směnu smazat?",
       [
         { text: 'Ano', onPress: () => this.onDelete(button, item) },
         { text: 'Ne', onPress: () => { }, style: 'cancel' },

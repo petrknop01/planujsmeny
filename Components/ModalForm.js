@@ -152,7 +152,7 @@ class ModalForm extends Component {
             <ModalPopup ref={(ref) => this._modal = ref} onSave={() => this.onSave()}>
                 <View>
                     <View style={{ marginBottom: 10, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-                        <Text>{new Date().toLocaleDateString()}</Text>
+                        <Text>{new Date(this.state.date).toLocaleDateString()}</Text>
                     </View>
                     <View style={{ marginBottom: 10, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
                         <View style={{ flex: 1 }}>

@@ -103,7 +103,7 @@ function UnasShifts({ noEdit, item, onPressAccept, onPressCancel }) {
                 <Text style={{ fontSize: FontSize.small, paddingBottom: 5 }} numberOfLines={1} ellipsizeMode="tail">{item.wpName}</Text>
                 {item.requests.length == 0 ?
                     <Text style={{ fontWeight: "bold", color: Colors.lightGray, padding: 10, textAlign: "center" }}>
-                        Pro tuto směnu není žádost
+                        Žádné žádosti
                     </Text> :
                     <Accordion
                         style={{
@@ -147,8 +147,8 @@ export default function FreeShiftListItemManager(props) {
                             height: 100,
                         }}>
                         <Text style={{ fontWeight: "bold", color: Colors.lightGray, padding: 10 }}>
-                            V tento den není směna
-                            </Text>
+                            Žádné neobsazené směny
+                        </Text>
                     </View> : null}
                 </View>
             </View>

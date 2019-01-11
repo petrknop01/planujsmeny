@@ -410,15 +410,17 @@ export default class FreeShiftsScreen extends Component {
   }
 
   onPressDelete(button, item) {
-    Alert.alert(
-      "Vymazat",
-      "Opravdu chcete zrušit naplánovanou směnu?",
-      [
-        { text: 'Ano', onPress: () => this.onDelete(button, item) },
-        { text: 'Ne', onPress: () => { }, style: 'cancel' },
-      ],
-      { cancelable: false }
-    )
+    // Alert.alert(
+    //   "Vymazat",
+    //   "Opravdu chcete zrušit naplánovanou směnu?",
+    //   [
+    //     { text: 'Ano', onPress: () => this.onDelete(button, item) },
+    //     { text: 'Ne', onPress: () => { }, style: 'cancel' },
+    //   ],
+    //   { cancelable: false }
+    // )
+
+    this.onDelete(button, item);
   }
 
   onPressReq(button, item) {
