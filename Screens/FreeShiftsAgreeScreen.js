@@ -285,12 +285,13 @@ export default class FreeShiftsScreen extends Component {
                       dateReq:req.dateReq,
                       timeReq:req.timeReq,
                       date: new Date(strTime),
+                      id: item2.id
                     }
                   );
                 }
               }
             }
-            const indexUnasShifts = this.inArray(this.data[strTime][0].unasShifts, item2.id);
+            const indexUnasShifts = this.inArray(this.data[strTime][0].unasShifts, insertUnasShifts.id);
             if (indexUnasShifts == -1) {
               this.data[strTime][0].unasShifts.push(insertUnasShifts);
             } else {
@@ -421,6 +422,7 @@ export default class FreeShiftsScreen extends Component {
         });
         button.endLoading();
         this._calendar.selectDate(new Date(item.date));
+        this.data[strTime][0].unasShifts = [];
         this.showAlert(res.infoMessages[0][1], res.ok == 0);
       })
       .catch(() => {

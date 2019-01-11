@@ -78,8 +78,8 @@ export default function FreeShiftListItem(props) {
             <View style={{ width: 40, alignItems: "center", marginTop: 5, marginRight: 5 }}>
                 <Text style={{ fontSize: FontSize.big, fontWeight: "bold", }}>{props.item.date.getDate()}</Text>
                 <Text style={{ fontSize: FontSize.small, }}>{DayNamesShort[props.item.date.getDay()]}</Text>
-                <TouchableOpacity onPress={() => props.onPressHome(props.item)} style={{ padding: 5 }}><Icon name="home" style={{ fontSize: 20, color: props.item.absences.length > 0 ? Colors.red : Colors.gray }} /></TouchableOpacity>
-                <TouchableOpacity onPress={() => props.onPressPlannedShifts(props.item)} style={{ padding: 5 }}><Icon name="walk" style={{ fontSize: 20, color: props.item.plannedShifts.length > 0 ? Colors.blue : Colors.gray }} /></TouchableOpacity>
+                <TouchableOpacity onPress={() => props.onPressHome(props.item)} style={{ padding: 5 }}><Icon name="sunglasses" type="MaterialCommunityIcons" style={{ fontSize: 20, color: props.item.absences.length > 0 ? Colors.red : Colors.gray }} /></TouchableOpacity>
+                <TouchableOpacity onPress={() => props.onPressPlannedShifts(props.item)} style={{ padding: 5 }}><Icon name="worker" type="MaterialCommunityIcons" style={{ fontSize: 20, color: props.item.plannedShifts.length > 0 ? Colors.blue : Colors.gray }} /></TouchableOpacity>
             </View>
             <View style={{ flex: 1 }}>
                 <View>

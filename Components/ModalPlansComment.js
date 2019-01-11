@@ -23,6 +23,10 @@ export default class ModalPlansComment extends Component {
         }, () => this._modal.showModal());
     }
 
+    save(){
+        
+    }
+
     render() {
         return (
             <ModalPopup ref={(ref) => this._modal = ref} onSave={() => this._modal.closeModal()} hideSaveButton={this.state.noEdit}>
