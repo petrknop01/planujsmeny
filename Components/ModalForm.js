@@ -20,10 +20,11 @@ class ModalForm extends Component {
         id: null,
         date: null,
         jobList: [{ id: null, label: "Nevybráno" }],
-        userList: []
+        userList: [],
+        index: 0
     }
 
-    open(item, wpId, date, jobList) {
+    open(item, wpId, date, jobList, index) {
         this.setState({
             timeFrom: item ? item.start : "00:00",
             timeTo: item ? item.end : "00:00",
@@ -33,6 +34,7 @@ class ModalForm extends Component {
             id: item ? item.id : null,
             date: date,
             jobList: jobList,
+            index: index,
             selectedJob: item ? this.getJob(item.jobId, jobList) : { id: null, label: "Nevybráno" },
         }, () => {
             this.getUsers();
@@ -141,7 +143,7 @@ class ModalForm extends Component {
         Ajax.post(address + url, data, cookie)
         .then(response => response.json())
         .then(res => {
-            this._modal.closeModal(() => setTimeout(() => this.props.onSaveDone(this.state.date, res), 100));
+            this._modal.closeModal(() => setTimeout(() => this.props.onSaveDone(this.state.date, res, this.state.index), 100));
         })
         .catch(() => {
         });

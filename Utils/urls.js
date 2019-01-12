@@ -32,4 +32,5 @@ export const UrlsApi = {
     getUnassignedShiftsForManager: "/index.php?o=ajax&ajax=appUnassignedShifts&a=loadUnassShiftsManager",
     appUnassignedShiftsAcceptReq: "/index.php?o=ajax&ajax=appUnassignedShifts&a=acceptReq",
     appUnassignedShiftsCancelReq: "/index.php?o=ajax&ajax=appUnassignedShifts&a=cancelReq",
+    updateComment: "/index.php?o=ajax&ajax=appPlanShifts&a=updateComment"
 }

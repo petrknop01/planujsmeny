@@ -68,10 +68,10 @@ export default function PlanShiftListItem(props) {
             </View>
             <View style={{ flex: 1 }}>
                 <View>
-                    {props.item.shifts.map((item, i) => <Shift noEdit={props.noEdit} key={item.id} item={item} onPressEdit={(item) => props.onPressEdit(item)} onPressDelete={(button, item) => props.onPressDelete(button, item)} />)}
+                    {props.item.shifts.map((item, i) => <Shift noEdit={props.noEdit} key={item.id} item={item} onPressEdit={(item) => props.onPressEdit(item, i)} onPressDelete={(button, item) => props.onPressDelete(button, item)} />)}
                 </View>
                 {props.noEdit? <View></View> :
-                <Button small success onPress={() => props.onPressAdd(props.item)} style={{ alignSelf: "flex-end" }}><Text>Přidat</Text></Button>}
+                <Button small success onPress={() => props.onPressAdd(props.item, props.item.shifts.length)} style={{ alignSelf: "flex-end" }}><Text>Přidat</Text></Button>}
             </View>
         </View >
     )

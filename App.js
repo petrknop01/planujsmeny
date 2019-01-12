@@ -7,6 +7,7 @@
  */
 
 import React, { Component } from 'react';
+import {AppState} from "react-native";
 import Router from "./Router";
 import LoginScreen from "./Screens/LoginScreen"
 import { Container, StyleProvider, Root } from "native-base";
@@ -28,11 +29,14 @@ export default class App extends Component {
     cookie: null,
     loading: true,
     menuType: 0,
+    appState: AppState.currentState
   }
   
   notification = new Notification();
 
   componentDidMount(){
+    AppState.addEventListener('change', this.onAppStateChange);
+
   }
 
   componentWillMount() {
@@ -58,6 +62,13 @@ export default class App extends Component {
         }));
       }
     });
+  }
+
+  onAppStateChange = (nextAppState) => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      this.scheduleNotification();
+    }
+    this.setState({appState: nextAppState});
   }
 
   scheduleNotification(){
@@ -111,6 +122,7 @@ export default class App extends Component {
              this.clearNotification();
              this.setState({ userID: null, username: null, appKey: null, address: null })
             }, 
+            scheduleNotification: () => this.scheduleNotification(),
            showSetting: () => this._settingScreen.open(),
            ...this.state }} />
     );

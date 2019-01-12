@@ -3,7 +3,7 @@ import { PushNotificationIOS, Platform } from "react-native";
 import DataStore from "./dataStore";
 import Ajax from "./ajax";
 import { UrlsApi } from "./urls";
-import { calculateDate } from "./functions";
+import { calculateDate, timeToString } from "./functions";
 
 function loadJobsAndWorkplaces(address, cookie, relogin, callback) {
     Ajax.get(address + UrlsApi.jobsAndWorkplaces, {}, cookie)
@@ -23,7 +23,7 @@ function loadJobsAndWorkplaces(address, cookie, relogin, callback) {
 function loadDates(address, cookie, relogin, callback) {
     let date = new Date();
     let data = {
-        from: calculateDate(date, 0),
+        from: timeToString(date),
         to: calculateDate(date, +1),
     }
     Ajax.get(address + UrlsApi.shifts, data, cookie)
@@ -57,7 +57,11 @@ function getWorkspaceName(workplaces, id) {
     return workplace.name
 }
 
-function scheduleNotification(date, title, text) {
+function schedule(date, title, text) {
+    if(date <= new Date()){
+        return;                                            
+    }
+
     PushNotification.localNotificationSchedule({
         title: title,
         message: text,
@@ -68,7 +72,13 @@ function scheduleNotification(date, title, text) {
 
 function toDate(datetime) {
     var bits = datetime.split(/\D/);
-    return new Date(bits[0], --bits[1], bits[2], bits[3], bits[4]);
+    let parseDate = new Date(bits[0], bits[1], bits[2], bits[3], bits[4]);
+    Platform.select({
+        ios: parseDate.setHours(parseDate.getHours()),
+        android: parseDate.setHours(parseDate.getHours())
+    });
+
+    return parseDate
 }
 
 
@@ -80,6 +90,7 @@ class Notification {
                     notification.finish(PushNotificationIOS.FetchResult.NoData);
                 }
             },
+            senderID: "PLANUJSMENY-123AHOJ123AHOJ",
         });
     }
 
@@ -93,12 +104,13 @@ class Notification {
                         for (const key in shifts) {
                             if (shifts.hasOwnProperty(key)) {
                                 const shifts2 = shifts[key];
-                                const strTime = this.timeToString(key.replace("d", ""));
+                                const strTime = timeToString(key.replace("d", ""));
 
                                 for (const key2 in shifts2) {
                                     if (shifts2.hasOwnProperty(key2)) {
                                         const shift = shifts2[key2];
                                         let item = {
+                                            id: shift.id,
                                             position: getJobsName(jobs, shift.job),
                                             name: getWorkspaceName(wps, shift.wp),
                                             timeFrom: shift.start ? toDate(strTime + " " + shift.start) : null,
@@ -107,23 +119,23 @@ class Notification {
 
                                         if (item.timeFrom) {
                                             if (data.longTermStart.enabled) {
-                                                let date = item.timeFrom;
-                                                date.setHours(date.getHours() + data.longTermStart.value);
-                                                scheduleNotification(date, "Za" + data.longTermStart.value + "hod. Vám začíná směna", "Dne " + strTime + " v " + shift.start + " Vám začíná směna na pozici " + item.position + " na pracovním místě " + item.name);
+                                                let date = new Date(item.timeFrom);
+                                                date.setHours(date.getHours() - data.longTermStart.value);
+                                                schedule(date, "Za " + data.longTermStart.value + "hod. Vám začíná směna", "Dne " + strTime + " v " + shift.start + " Vám začíná směna na pozici " + item.position + " na pracovním místě " + item.name);
                                             }
 
                                             if (data.shortTermStart.enabled) {
-                                                let date = item.timeFrom;
-                                                date.setMinutes(date.getMinutes() + data.shortTermStart.value);
-                                                scheduleNotification(date, "Za" + data.shortTermStart.value + "min. Vám začíná směna", "Dne " + strTime + " v " + shift.start + " Vám začíná směna na pozici " + item.position + " na pracovním místě " + item.name);
+                                                let date = new Date(item.timeFrom);
+                                                date.setMinutes(date.getMinutes() - data.shortTermStart.value);
+                                                schedule(date, "Za " + data.shortTermStart.value + "min. Vám začíná směna", "Dne " + strTime + " v " + shift.start + " Vám začíná směna na pozici " + item.position + " na pracovním místě " + item.name);
                                             }
                                         }
 
                                         if (item.endTerm) {
                                             if (data.endTerm.enabled) {
-                                                let date = item.endTerm;
+                                                let date = new Date(item.endTerm);
                                                 date.setMinutes(date.getMinutes() - data.endTerm.value);
-                                                scheduleNotification(date, "Za" + data.endTerm.value + "hod. Vám končí směna", "V " + shift.end + " Vám končí směna na pozici " + item.position + " na pracovním místě " + item.name);
+                                                schedule(date, "Za " + data.endTerm.value + "hod. Vám končí směna", "V " + shift.end + " Vám končí směna na pozici " + item.position + " na pracovním místě " + item.name);
                                             }
                                         }
                                     }

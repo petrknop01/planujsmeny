@@ -10,7 +10,7 @@ import React, { Component } from 'react';
 import { Container } from "native-base";
 import Ajax from "./../Utils/ajax";
 import { UrlsApi } from "./../Utils/urls";
-import { xdateToData, calculateDate } from "./../Utils/functions";
+import { xdateToData, calculateDate, timeToString } from "./../Utils/functions";
 import OfflineNotice from "./../Components/OfflineNotice";
 import ShiftListItemFree from "./../Components/ShiftListItemFree";
 import ShiftListItem from "./../Components/ShiftListItem";
@@ -174,7 +174,7 @@ export default class MyShiftsScreen extends Component {
     for (const key in items) {
       if (items.hasOwnProperty(key)) {
         const shifts = items[key];
-        const strTime = this.timeToString(key.replace("d", ""));
+        const strTime = timeToString(key.replace("d", ""));
         if (!this.state.markedDates[strTime]) {
           this.state.markedDates[strTime] = { dots: [] };
           for (const key2 in shifts) {
@@ -197,7 +197,7 @@ export default class MyShiftsScreen extends Component {
   convertShifts(items, day) {
     for (let i = -85; i < 85; i++) {
       const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-      const strTime = this.timeToString(time);
+      const strTime = timeToString(time);
       if (!this.state.shifts[strTime]) {
         this.state.shifts[strTime] = [];
       }
@@ -206,7 +206,7 @@ export default class MyShiftsScreen extends Component {
     for (const key in items) {
       if (items.hasOwnProperty(key)) {
         const shifts = items[key];
-        const strTime = this.timeToString(key.replace("d", ""));
+        const strTime = timeToString(key.replace("d", ""));
         this.state.shifts[strTime] = [{ items: [] }];
         for (const key2 in shifts) {
           if (shifts.hasOwnProperty(key2)) {
@@ -239,11 +239,6 @@ export default class MyShiftsScreen extends Component {
     } else {
       this.loadDates(day)
     }
-  }
-
-  timeToString(time) {
-    const date = new Date(time);
-    return date.toISOString().split('T')[0];
   }
 
   renderItem(item) {

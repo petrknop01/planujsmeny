@@ -11,7 +11,9 @@ import { Alert } from "react-native";
 import { Container, Toast } from "native-base";
 import { Colors } from "../Utils/variables";
 import { UrlsApi } from "./../Utils/urls";
-import { xdateToData, calculateDate } from "./../Utils/functions";
+import { xdateToData, calculateDate, timeToString } from "./../Utils/functions";
+import XDate from 'xdate';
+
 import Calendar from "./../Components/Calendar";
 import Ajax from "./../Utils/ajax";
 import DataStore from "./../Utils/dataStore";
@@ -199,12 +201,6 @@ export default class FreeShiftsScreen extends Component {
   }
 
 
-
-  timeToString(time) {
-    const date = new Date(time);
-    return date.toISOString().split('T')[0];
-  }
-
   loadMetadata(callback) {
     let { address, cookie, relogin } = this.props.navigation.getScreenProps();
     Ajax.get(address + UrlsApi.metadataShiftsForWp, {}, cookie)
@@ -232,7 +228,7 @@ export default class FreeShiftsScreen extends Component {
   convertShifts(items, day) {
     for (let i = -85; i < 85; i++) {
       const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-      const strTime = this.timeToString(time);
+      const strTime = timeToString(time);
       if (!this.data[strTime]) {
         this.data[strTime] = [{
           date: new Date(strTime),
@@ -252,7 +248,7 @@ export default class FreeShiftsScreen extends Component {
     for (const key in items) {
       if (items.hasOwnProperty(key)) {
         const item = items[key];
-        const strTime = this.timeToString(key.replace("d", ""));
+        const strTime = timeToString(key.replace("d", ""));
         for (const key2 in item) {
           if (item.hasOwnProperty(key2)) {
             const item2 = item[key2];
@@ -369,7 +365,7 @@ export default class FreeShiftsScreen extends Component {
   onCancel(button, item) {
     button.startLoading();
     let url = UrlsApi.appUnassignedShiftsCancelReq;
-    let { address, cookie } = this.props.navigation.getScreenProps();
+    let { address, cookie,scheduleNotification } = this.props.navigation.getScreenProps();
     let data = {
       IDreq: item.idReq,
     }
@@ -377,7 +373,7 @@ export default class FreeShiftsScreen extends Component {
     Ajax.post(address + url, data, cookie)
       .then(response => response.json())
       .then(res => {
-        const strTime = this.timeToString(item.date);
+        const strTime = timeToString(item.date);
         this.data[strTime][0].change = true;
         this.setState({
           data: { ...this.data }
@@ -385,6 +381,7 @@ export default class FreeShiftsScreen extends Component {
         button.endLoading();
         this._calendar.selectDate(new Date(item.date));
         this.showAlert(res.infoMessages[0][1], res.ok == 0);
+        scheduleNotification();
       })
       .catch(() => {
         button.endLoading();
@@ -407,7 +404,7 @@ export default class FreeShiftsScreen extends Component {
   onPressAccept(button, item) {
     button.startLoading();
     let url = UrlsApi.appUnassignedShiftsAcceptReq;
-    let { address, cookie } = this.props.navigation.getScreenProps();
+    let { address, cookie, scheduleNotification } = this.props.navigation.getScreenProps();
     let data = {
       IDreq: item.idReq,
     }
@@ -415,7 +412,7 @@ export default class FreeShiftsScreen extends Component {
     Ajax.post(address + url, data, cookie)
       .then(response => response.json())
       .then(res => {
-        const strTime = this.timeToString(item.date);
+        const strTime = timeToString(item.date);
         this.data[strTime][0].change = true;
         this.setState({
           data: { ...this.data }
@@ -424,6 +421,7 @@ export default class FreeShiftsScreen extends Component {
         this._calendar.selectDate(new Date(item.date));
         this.data[strTime][0].unasShifts = [];
         this.showAlert(res.infoMessages[0][1], res.ok == 0);
+        scheduleNotification();
       })
       .catch(() => {
         button.endLoading();

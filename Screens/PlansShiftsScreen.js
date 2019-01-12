@@ -11,7 +11,9 @@ import { View, Alert } from "react-native";
 import { Container, Text, Toast } from "native-base";
 import { Colors } from "../Utils/variables";
 import { UrlsApi } from "./../Utils/urls";
-import { xdateToData, calculateDate } from "./../Utils/functions";
+import { xdateToData, calculateDate, timeToString } from "./../Utils/functions";
+import XDate from 'xdate';
+
 import Calendar from "./../Components/Calendar";
 import Ajax from "./../Utils/ajax";
 import DataStore from "./../Utils/dataStore";
@@ -110,7 +112,7 @@ export default class PlansShiftsScreen extends Component {
     }
   }
 
-  loadDates(day) {
+  loadDates(day, callback) {
     let data = {
       from: calculateDate(day.dateString, -1),
       to: calculateDate(day.dateString, +1),
@@ -149,7 +151,12 @@ export default class PlansShiftsScreen extends Component {
           wpJobs: response.wpJobs,
           selectedWp: wpItem
         },
-          () => this.saveOfflineData()
+          () => {
+            this.saveOfflineData();
+            if(callback){
+              callback();
+            }
+          }
         );
       })
       .catch(() => {
@@ -229,12 +236,6 @@ export default class PlansShiftsScreen extends Component {
     return newItems;
   }
 
-
-  timeToString(time) {
-    const date = new Date(time);
-    return date.toISOString().split('T')[0];
-  }
-
   loadMetadata(callback) {
     let { address, cookie, relogin } = this.props.navigation.getScreenProps();
     Ajax.get(address + UrlsApi.metadataShiftsForWp, {}, cookie)
@@ -273,7 +274,7 @@ export default class PlansShiftsScreen extends Component {
   convertShifts(items, day) {
     for (let i = -85; i < 85; i++) {
       const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-      const strTime = this.timeToString(time);
+      const strTime = timeToString(time);
       if (!this.data[strTime]) {
         this.data[strTime] = [{
           date: new Date(strTime),
@@ -299,7 +300,7 @@ export default class PlansShiftsScreen extends Component {
     for (const key in items) {
       if (items.hasOwnProperty(key)) {
         const item = items[key];
-        const strTime = this.timeToString(key.replace("d", ""));
+        const strTime = timeToString(key.replace("d", ""));
         if (type == TYPE.comments) {
           this.data[strTime][0].comments = [{
             comment: [item]
@@ -431,7 +432,7 @@ export default class PlansShiftsScreen extends Component {
   onDelete(button, item) {
     button.startLoading();
     let url = UrlsApi.removeShift;
-    let { address, cookie } = this.props.navigation.getScreenProps();
+    let { address, cookie, scheduleNotification } = this.props.navigation.getScreenProps();
     let data = {
       IDshift: item.id,
       delete: 1
@@ -441,14 +442,17 @@ export default class PlansShiftsScreen extends Component {
       .then(response => response.json())
       .then(res => {
         button.endLoading();
-        const strTime = this.timeToString(new Date(item.date));
+        const strTime = timeToString(new Date(item.date));
         const indexShift = this.inArray(this.data[strTime][0].shifts, item.id);
         if (indexShift != -1) {
           this.data[strTime][0].shifts.splice(indexShift, 1);
           this.data[strTime][0].change = true;
           this.setState({
             data: { ...this.data }
-          }, () => this._calendar.selectDate(new Date(item.date))
+          }, () => {
+            this._calendar.selectDate(new Date(item.date));
+            scheduleNotification()
+          }
           );
         }
         this.showAlert(res.infoMessages[0][1], res.ok == 0);
@@ -472,12 +476,12 @@ export default class PlansShiftsScreen extends Component {
   }
 
 
-  onPressEdit(item) {
-    this._modalForm.open(item, this.state.IDwp, item.date, this.getJobsList());
+  onPressEdit(item, index) {
+    this._modalForm.open(item, this.state.IDwp, item.date, this.getJobsList(), index);
   }
 
-  onPressAdd(item) {
-    this._modalForm.open(null, this.state.IDwp, item.date, this.getJobsList());
+  onPressAdd(item, index) {
+    this._modalForm.open(null, this.state.IDwp, item.date, this.getJobsList(), index);
   }
 
   getJobsList() {
@@ -498,7 +502,7 @@ export default class PlansShiftsScreen extends Component {
   }
 
   onPressComment(item) {
-    this._modalPlansComments.open(item, this.noEdit(item.date));
+    this._modalPlansComments.open(item, this.state.IDwp, item.date, this.noEdit(item.date));
   }
 
   noEdit(actualDate) {
@@ -509,13 +513,23 @@ export default class PlansShiftsScreen extends Component {
     return actualDate <= date;
   }
 
-  onSaveDone(date, res) {
-    const strTime = this.timeToString(date);
+  onSaveDone(date, res, index) {
+    let { scheduleNotification } = this.props.navigation.getScreenProps();
+    scheduleNotification();
+
+    const strTime = timeToString(date);
     this.data[strTime][0].change = true;
     this.setState({
       data: { ...this.data }
-    });
-    this._calendar.selectDate(date);
+    }, () => {
+        this.loadDates(xdateToData(XDate(date)),    
+          () => this._calendar.scroll(
+            index * 172,
+            XDate(date)
+          )
+        );
+      }
+    );
     setTimeout(() => {
       this.showAlert(res.infoMessages[0][1], res.ok == 0);
     }, 250);
@@ -528,9 +542,9 @@ export default class PlansShiftsScreen extends Component {
         item={item}
         onPressHome={(item) => this.onPressHome(item)}
         onPressComment={(item) => this.onPressComment(item)}
-        onPressEdit={(item) => this.onPressEdit(item)}
+        onPressEdit={(item,index) => this.onPressEdit(item,index)}
         onPressDelete={(button, item) => this.onPressDelete(button, item)}
-        onPressAdd={(item) => this.onPressAdd(item)}
+        onPressAdd={(item,index) => this.onPressAdd(item,index)}
         noEdit={this.noEdit(item.date)}
       />
     );
@@ -571,8 +585,8 @@ export default class PlansShiftsScreen extends Component {
           rowHasChanged={(r1, r2) => r1.change == true}
         />
         <ModalPlansAbsence ref={(ref) => this._modalPlansAbsence = ref} />
-        <ModalPlansComment ref={(ref) => this._modalPlansComments = ref} />
-        <ModalForm ref={(ref) => this._modalForm = ref} navigation={this.props.navigation} onSaveDone={(date, res) => this.onSaveDone(date, res)} />
+        <ModalPlansComment ref={(ref) => this._modalPlansComments = ref} navigation={this.props.navigation} onSaveDone={(date, res) => this.onSaveDone(date, res, 0)}/>
+        <ModalForm ref={(ref) => this._modalForm = ref} navigation={this.props.navigation} onSaveDone={(date, res, index) => this.onSaveDone(date, res, index)} />
       </Container>
     );
   }

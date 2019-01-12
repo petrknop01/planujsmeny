@@ -55,6 +55,28 @@ export default class Calendar extends Component {
         }
     }
 
+    scroll(offset, date) {
+        const reservations = this._agenda.list.getReservations(this._agenda.list.props);
+        if (this._agenda.list.list) {
+          let scrollPosition = 0;
+          let scrollIndex = 0;
+          for (; scrollIndex < reservations.reservations.length; scrollIndex++) {
+              const element = reservations.reservations[scrollIndex];
+              const resDate =  element.date;
+              if(resDate.toDateString()  == date.toDateString()){
+                  break;
+              }
+          }
+
+          for (let i = 0; i < scrollIndex; i++) {
+            scrollPosition += this._agenda.list.heights[i] || 0;
+          }
+          scrollPosition += offset || 0
+          this._agenda.list.scrollOver = false;
+          this._agenda.list.list.scrollToOffset({offset: scrollPosition, animated: true});
+        }
+    }
+
     render() {
         return (
             <Agenda

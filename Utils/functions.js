@@ -201,7 +201,6 @@ export function xdateToData(xdate) {
     };
 }
 
-
 export function calculateDate(day, addMonths) {
     let date = new Date(day);
     date.setMonth(date.getMonth() + addMonths);
@@ -211,4 +210,10 @@ export function calculateDate(day, addMonths) {
         ((date.getMonth() + 1) < 10 ? "0" : "") + (date.getMonth() + 1) + "-" +
         date.getDate()
     );
+}
+
+
+export function timeToString(time) {
+    const date = new Date(time);
+    return date.toISOString().split('T')[0];
 }

@@ -13,7 +13,7 @@ import Ajax from "./../Utils/ajax";
 import { Container, Text, Toast } from "native-base";
 import { Colors } from "../Utils/variables";
 import { UrlsApi } from "./../Utils/urls";
-import { xdateToData, calculateDate } from "./../Utils/functions";
+import { xdateToData, calculateDate, timeToString } from "./../Utils/functions";
 
 import MyTimesListItem from "./../Components/MyTimesListItem";
 import MyTimesFreeListItem from "./../Components/MyTimesFreeListItem";
@@ -277,7 +277,7 @@ export default class MyTimesScreen extends Component {
   convertMyTimes(items, types, day) {
     for (let i = -85; i < 85; i++) {
       const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-      const strTime = this.timeToString(time);
+      const strTime = timeToString(time);
       if (!this.state.items[strTime]) {
         this.state.items[strTime] = [];
       }
@@ -309,11 +309,6 @@ export default class MyTimesScreen extends Component {
 
   loadItems(day) {
     this.loadDates(day);
-  }
-
-  timeToString(time) {
-    const date = new Date(time);
-    return date.toISOString().split('T')[0];
   }
 
   onDelete(button, item) {
