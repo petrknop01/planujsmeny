@@ -58,7 +58,7 @@ function getWorkspaceName(workplaces, id) {
 }
 
 function schedule(date, title, text) {
-    if(date <= new Date()){
+    if(date < new Date()){
         return;                                            
     }
 
@@ -72,7 +72,7 @@ function schedule(date, title, text) {
 
 function toDate(datetime) {
     var bits = datetime.split(/\D/);
-    let parseDate = new Date(bits[0], bits[1], bits[2], bits[3], bits[4]);
+    let parseDate = new Date(bits[0], parseInt(bits[1]) - 1, bits[2], bits[3], bits[4]);
     Platform.select({
         ios: parseDate.setHours(parseDate.getHours()),
         android: parseDate.setHours(parseDate.getHours())
@@ -110,7 +110,6 @@ class Notification {
                                     if (shifts2.hasOwnProperty(key2)) {
                                         const shift = shifts2[key2];
                                         let item = {
-                                            id: shift.id,
                                             position: getJobsName(jobs, shift.job),
                                             name: getWorkspaceName(wps, shift.wp),
                                             timeFrom: shift.start ? toDate(strTime + " " + shift.start) : null,

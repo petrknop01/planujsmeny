@@ -36,7 +36,10 @@ export default class App extends Component {
 
   componentDidMount(){
     AppState.addEventListener('change', this.onAppStateChange);
+  }
 
+  componentDidCatch(error, errorInfo){
+    alert(errorInfo);
   }
 
   componentWillMount() {
