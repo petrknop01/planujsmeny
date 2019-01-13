@@ -3,7 +3,7 @@ import { PushNotificationIOS, Platform } from "react-native";
 import DataStore from "./dataStore";
 import Ajax from "./ajax";
 import { UrlsApi } from "./urls";
-import { calculateDate, timeToString } from "./functions";
+import { calculateDate, timeToString, timeToReadString } from "./functions";
 
 function loadJobsAndWorkplaces(address, cookie, relogin, callback) {
     Ajax.get(address + UrlsApi.jobsAndWorkplaces, {}, cookie)
@@ -120,13 +120,13 @@ class Notification {
                                             if (data.longTermStart.enabled) {
                                                 let date = new Date(item.timeFrom);
                                                 date.setHours(date.getHours() - data.longTermStart.value);
-                                                schedule(date, "Za " + data.longTermStart.value + "hod. Vám začíná směna", "Dne " + strTime + " v " + shift.start + " Vám začíná směna na pozici " + item.position + " na pracovním místě " + item.name);
+                                                schedule(date, "Za " + data.longTermStart.value + "hod. Vám začíná směna", "Dne " + timeToReadString(strTime) + " v " + shift.start + " Vám začíná směna na pozici " + item.position + " na pracovním místě " + item.name);
                                             }
 
                                             if (data.shortTermStart.enabled) {
                                                 let date = new Date(item.timeFrom);
                                                 date.setMinutes(date.getMinutes() - data.shortTermStart.value);
-                                                schedule(date, "Za " + data.shortTermStart.value + "min. Vám začíná směna", "Dne " + strTime + " v " + shift.start + " Vám začíná směna na pozici " + item.position + " na pracovním místě " + item.name);
+                                                schedule(date, "Za " + data.shortTermStart.value + "min. Vám začíná směna", "Dne " + timeToReadString(strTime) + " v " + shift.start + " Vám začíná směna na pozici " + item.position + " na pracovním místě " + item.name);
                                             }
                                         }
 

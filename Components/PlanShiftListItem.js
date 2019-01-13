@@ -32,6 +32,7 @@ function Shift({noEdit, item, onPressEdit, onPressDelete }) {
                 backgroundColor: "white",
                 marginBottom: 10,
                 flex: 1,
+                height: 165
             }}>
             <Text style={{ fontWeight: "bold", backgroundColor: item.color, padding: 10, color: invertColor(item.color, true) }}>{item.userName}</Text>
             <View style={{ padding: 10 }}>

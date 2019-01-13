@@ -8,12 +8,12 @@ import Select from "./../Components/Select";
 import { UrlsApi } from "./../Utils/urls";
 import Ajax from "./../Utils/ajax";
 import CustomSelectUser from "./../Components/CustomSelectUser";
-
+import {timeToReadString} from "./../Utils/functions";
 
 class ModalForm extends Component {
     state = {
-        timeFrom: "00:00",
-        timeTo: "00:00",
+        timeFrom: "08:00",
+        timeTo: "16:00",
         wpId: 0,
         selectedJob: { id: null, label: "Nevybráno" },
         selectedUserId: null,
@@ -26,8 +26,8 @@ class ModalForm extends Component {
 
     open(item, wpId, date, jobList, index) {
         this.setState({
-            timeFrom: item ? item.start : "00:00",
-            timeTo: item ? item.end : "00:00",
+            timeFrom: item ? item.start : "08:00",
+            timeTo: item ? item.end : "16:00",
             wpId: wpId,
             selectedItemUserId: item ? item.userId : null,
             selectedUserId: item ? item.userId : null,
@@ -115,16 +115,17 @@ class ModalForm extends Component {
             return;
         }
 
-        if (this.state.selectedUserId== null) {
-            this._modal._loadingButton.endLoading();
-            return;
-        }
+        
 
         let data = {
             job : this.state.selectedJob.id ,
             user : this.state.selectedUserId,
             from : this.state.timeFrom,
             to : this.state.timeTo
+        }
+
+        if (this.state.selectedUserId !== null) {
+            data.user = this.state.selectedUserId
         }
 
         let url = "";
@@ -154,7 +155,7 @@ class ModalForm extends Component {
             <ModalPopup ref={(ref) => this._modal = ref} onSave={() => this.onSave()}>
                 <View>
                     <View style={{ marginBottom: 10, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-                        <Text>{new Date(this.state.date).toLocaleDateString()}</Text>
+                        <Text>{timeToReadString(this.state.date)}</Text>
                     </View>
                     <View style={{ marginBottom: 10, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
                         <View style={{ flex: 1 }}>

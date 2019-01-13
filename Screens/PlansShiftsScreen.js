@@ -58,8 +58,6 @@ export default class PlansShiftsScreen extends Component {
     wpJobs: []
   }
 
-
-
   reloadData() {
     _selectedDate = new Date();
     this.data = {};
@@ -79,7 +77,6 @@ export default class PlansShiftsScreen extends Component {
       this._calendar.selectDate(this._selectedDate);
     }
   }
-
 
   showAlert(message, isError) {
     if (isError) {
@@ -524,7 +521,7 @@ export default class PlansShiftsScreen extends Component {
     }, () => {
         this.loadDates(xdateToData(XDate(date)),    
           () => this._calendar.scroll(
-            index * 172,
+            index * 175,
             XDate(date)
           )
         );

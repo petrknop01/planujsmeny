@@ -7,7 +7,7 @@
  */
 
 import React, { Component } from 'react';
-import {AppState} from "react-native";
+import {AppState, Alert} from "react-native";
 import Router from "./Router";
 import LoginScreen from "./Screens/LoginScreen"
 import { Container, StyleProvider, Root } from "native-base";
@@ -39,7 +39,14 @@ export default class App extends Component {
   }
 
   componentDidCatch(error, errorInfo){
-    alert(errorInfo);
+    Alert.alert(
+      "Chyba",
+      "Nastala neočekávaná chyba aplikace, prosím zapněte a vypněte aplikaci",
+      [
+        { text: 'Ok', onPress: () => { }, style: 'cancel' },
+      ],
+      { cancelable: false }
+    )
   }
 
   componentWillMount() {

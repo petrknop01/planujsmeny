@@ -13,7 +13,7 @@ import Ajax from "./../Utils/ajax";
 import { Container, Text, Toast } from "native-base";
 import { Colors } from "../Utils/variables";
 import { UrlsApi } from "./../Utils/urls";
-import { xdateToData, calculateDate, timeToString } from "./../Utils/functions";
+import { xdateToData, calculateDate, timeToString, timeToReadString } from "./../Utils/functions";
 
 import MyTimesListItem from "./../Components/MyTimesListItem";
 import MyTimesFreeListItem from "./../Components/MyTimesFreeListItem";
@@ -313,7 +313,7 @@ export default class MyTimesScreen extends Component {
 
   onDelete(button, item) {
     button.startLoading();
-    let url = UrlsApi.myTimesEdit;
+    let url = UrlsApi.myTimesEdit + "&empl=" + this.state.selectedUserId;
     let { address, cookie } = this.props.navigation.getScreenProps();
     let data = {
       IDtw: item.id,
@@ -326,6 +326,7 @@ export default class MyTimesScreen extends Component {
       .then(response => response.json())
       .then(res => {
         button.endLoading();
+        this.data = [];
         this._calendar.selectDate(new Date(item.date));
         this.showAlert(res.info, res.ok == 0);
       })
@@ -465,7 +466,7 @@ export default class MyTimesScreen extends Component {
         <ModalPopup ref={(ref) => this._modal = ref} onSave={() => this.onSave()}>
           <View>
             <View style={{ marginBottom: 10, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-              <Text>{new Date(this.state.editedDate).toLocaleDateString()}</Text>
+              <Text>{timeToReadString(this.state.editedDate)}</Text>
             </View>
             <View style={{ marginBottom: 10, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
               <View style={{ flex: 1 }}>

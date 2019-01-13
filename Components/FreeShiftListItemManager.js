@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, TouchableOpacity } from "react-native";
 import { Text, Button, Icon, Accordion } from "native-base";
 import { Colors, FontSize, DayNamesShort } from "../Utils/variables";
-import { invertColor } from "../Utils/functions";
+import { invertColor,timeToReadString } from "../Utils/functions";
 import LoadingButton from "./../Components/LoadingButton"
 
 function getColor(state) {
@@ -59,7 +59,7 @@ function Request({ noEdit, item, onPressAccept, onPressCancel }) {
             <Text style={{ fontWeight: "bold", padding: 10, backgroundColor: getColor(item.statusReq), color: invertColor(getColor(item.statusReq),true) }}>{item.userName} - {getText(item.statusReq)}
             </Text>
             <View style={{ padding: 10 }}>
-                <Text style={{ fontSize: FontSize.small }}>Vytvořeno: {item.dateReq} {item.timeReq}</Text>
+                <Text style={{ fontSize: FontSize.small }}>Vytvořeno: {timeToReadString(item.dateReq)} {item.timeReq}</Text>
                 <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "flex-end" }}>
                     {noEdit ? null :
                         item.statusReq == 0 || item.statusReq == 2 ?
@@ -117,7 +117,6 @@ function UnasShifts({ noEdit, item, onPressAccept, onPressCancel }) {
                         dataArray={[{ title: "Žádosti o směnu", content: "Volné směny" }]}
                         renderContent={() => item.requests.map((req, r) => <Request key={r} item={req} noEdit={noEdit} onPressAccept={(ref, item) => onPressAccept(ref, item)} onPressCancel={(ref, item) => onPressCancel(ref, item)} />)}
                     />
-
                 }
             </View>
         </View>
