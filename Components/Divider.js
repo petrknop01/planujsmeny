@@ -1,4 +1,8 @@
-import React, { Component } from 'react';
+/**
+ * Komponenta pro oddělovač
+ */
+
+import React from 'react';
 import { View } from "react-native";
 import { Text } from "native-base";
 import { Colors, FontSize } from "../Utils/variables";

@@ -1,9 +1,13 @@
-import React, { Component } from 'react';
+/**
+ * Řádek pro volnou směnu
+ */
+
+import React from 'react';
 import { View, TouchableOpacity } from "react-native";
-import { Text, Button, Icon } from "native-base";
-import { Colors, FontSize, DayNamesShort } from "../Utils/variables";
-import { invertColor } from "../Utils/functions";
-import LoadingButton from "./../Components/LoadingButton"
+import { Text, Icon } from "native-base";
+import { Colors, FontSize, DayNamesShort } from "./../../Utils/variables";
+import { invertColor } from "./../../Utils/functions";
+import LoadingButton from "./../../Components/LoadingButton"
 
 function UnasShifts({ noEdit, item, onPressReq, onPressDelete }) {
     let ref = null;
@@ -83,7 +87,7 @@ export default function FreeShiftListItem(props) {
             </View>
             <View style={{ flex: 1 }}>
                 <View>
-                    {props.item.unasShifts.map((item, i) => <UnasShifts noEdit={props.noEdit} key={item.id} item={item} onPressReq={(button, item) => props.onPressReq(button, item)} onPressDelete={(button, item) => props.onPressDelete(button, item)} />)}
+                    {props.item.unasShifts.map((item) => <UnasShifts noEdit={props.noEdit} key={item.id} item={item} onPressReq={(button, item) => props.onPressReq(button, item)} onPressDelete={(button, item) => props.onPressDelete(button, item)} />)}
                     {props.item.unasShifts.length == 0 ? <View
                         style={{
                             borderRadius: 5,

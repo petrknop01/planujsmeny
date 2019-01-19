@@ -1,37 +1,17 @@
 /**
- * Futbalito app, starting layout
+ * Komponenta pro výběr uživatele
  */
 
 import React, { Component } from 'react';
 
-import {
-    ScrollView,
-    TouchableOpacity,
-    View,
-    Platform,
-    Modal,
-    Dimensions
-} from 'react-native';
+import {View} from 'react-native';
 
-import {
-    Text,
-    Header,
-    Left,
-    Body,
-    Right,
-    Title,
-    Button,
-    Container,
-    Icon
-} from 'native-base';
 
-import variable from './../native-base-theme/variables/platform';
 import Ajax from "./../Utils/ajax";
 import { withNavigation } from 'react-navigation';
 import Select from "./Select";
 import { UrlsApi } from "./../Utils/urls";
 
-import { Colors, FontSize } from "../Utils/variables";
 
 export class UserSelect extends Component {
     static defaultProps = {
@@ -97,7 +77,7 @@ export class UserSelect extends Component {
         if (this.state.users.length == 0) {
             return (
                 <View style={{ height: 60, backgroundColor: "white", padding: 10 }}>
-                    <Select disabled={true} selected={this.state.selectedUser} items={[this.state.selectedUser]} onChange={(item) => null
+                    <Select disabled={true} selected={this.state.selectedUser} items={[this.state.selectedUser]} onChange={() => null
                     } />
                 </View>);
         }

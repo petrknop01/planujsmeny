@@ -1,5 +1,5 @@
 /**
- * Futbalito app, starting layout
+ * Komponenta pro select
  */
 
 import React, { Component } from 'react';
@@ -8,10 +8,7 @@ import {
     ScrollView,
     TouchableOpacity,
     View,
-    Platform,
-    Modal,
-    Dimensions
-} from 'react-native';
+    Modal} from 'react-native';
 
 import {
     Text,
@@ -27,7 +24,7 @@ import {
 
 import variable from './../native-base-theme/variables/platform';
 
-import { Colors, FontSize } from "../Utils/variables";
+import { Colors } from "../Utils/variables";
 
 export default class Select extends Component {
 

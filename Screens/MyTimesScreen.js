@@ -1,31 +1,27 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
+ * Setting screen
+ * - screen pro zobrazení časových směn obrazovky
  */
 
-import React, { Component } from 'react';
-import { View, Alert } from "react-native";
-import Ajax from "./../Utils/ajax";
 
-import { Container, Text, Toast } from "native-base";
+import React, { Component } from 'react';
+import { Alert } from "react-native";
+import Ajax from "./../Utils/ajax";
+import Info from "./../Components/Info";
+import { Container, Toast } from "native-base";
 import { Colors } from "../Utils/variables";
 import { UrlsApi } from "./../Utils/urls";
-import { xdateToData, calculateDate, timeToString, timeToReadString } from "./../Utils/functions";
+import { xdateToData, calculateDate, timeToString } from "./../Utils/functions";
 
-import MyTimesListItem from "./../Components/MyTimesListItem";
-import MyTimesFreeListItem from "./../Components/MyTimesFreeListItem";
+import MyTimesListItem from "./../Components/ListItems/MyTimesListItem";
+import MyTimesFreeListItem from "./../Components/ListItems/MyTimesFreeListItem";
 import OfflineNotice from "./../Components/OfflineNotice";
-import ModalPopup from "./../Components/ModalPopup";
-import InputTime from "./../Components/InputTime";
-import Select from "./../Components/Select";
 import DataStore from "./../Utils/dataStore";
 import XDate from 'xdate';
 import UserSelect from "./../Components/UserSelect";
 
 import Calendar from "./../Components/Calendar";
+import ModalMyTymesForm from '../Components/Modals/ModalMyTymesForm';
 
 
 export default class MyTimesScreen extends Component {
@@ -43,26 +39,16 @@ export default class MyTimesScreen extends Component {
       date: null,
       offline: false,
       types: {},
-      timeFrom: "00:00",
-      timeTo: "00:00",
-      timeAbsenceLength: "00:00",
       autoTW: false,
       lastForbidenEditationDate: {},
-      editedDate: null,
-      editedItem: null,
-      editedCanEditTW: false,
-      editedCanEditAbsence: false,
-      selectMain: { label: "Dostupný" },
-      typesArr: [],
+      typesToSelect: [],
       selectedTypes: { label: "" },
-      forSelectItems: [{ label: "Dostupný" }, { label: "Absence" }]
     };
   }
 
   reloadData() {
     this.avails = {};
-    _selectedDate = new Date();
-
+    this._selectedDate = new Date();
     this.setState({
       markedDates: {},
       items: {},
@@ -80,86 +66,6 @@ export default class MyTimesScreen extends Component {
     }
   }
 
-
-  showAlert(message, isError) {
-    if (isError) {
-      Alert.alert(
-        "Chyba",
-        message,
-        [
-          { text: 'Ok', onPress: () => { }, style: 'cancel' },
-        ],
-        { cancelable: false }
-      )
-      return;
-    }
-
-    Toast.show({
-      text: message,
-      buttonText: "Ok",
-      duration: 5000,
-      position: "bottom"
-    });
-  }
-
-  onSave() {
-    let url = this.state.editedItem ? UrlsApi.myTimesEdit : UrlsApi.myTimesAdd;
-    let { address, cookie } = this.props.navigation.getScreenProps();
-    let data = {
-      start: this.state.timeFrom,
-      end: this.state.timeTo,
-      type: this.state.selectMain.label == "Dostupný" ? 0 : 1,
-    }
-
-    if (this.state.selectMain.label == "Absence") {
-      data.absenceType = this.state.selectedTypes.id;
-      data.absenceLength = this.state.timeAbsenceLength;
-    }
-
-    if (this.state.editedItem) {
-      data.IDtw = this.state.editedItem.id;
-    } else {
-      data.date = this.state.editedDate.toJSON().slice(0, 10);
-    }
-
-    // this.setState({
-    //   items: {},
-    //   markedDates: {}
-    // });
-
-    Ajax.post(address + url + "&empl=" + this.state.selectedUserId, data, cookie)
-      .then(response => response.json())
-      .then(res => {
-        this._calendar.selectDate(this.state.editedDate);
-        this._modal.closeModal(() =>
-          setTimeout(() => {
-            this.showAlert(res.info, res.ok == 0);
-          }, 250));
-      })
-      .catch(() => {
-        this._modal.closeModal();
-      });
-  }
-
-
-  renderEmptyDate(day) {
-
-    let dateTW = new Date(this.state.lastForbidenEditationDate.tw);
-    let dateAb = new Date(this.state.lastForbidenEditationDate.absence);
-
-    dateEdit = day > dateTW;
-    dateAbsence = day > dateAb;
-
-
-    return (
-      <MyTimesFreeListItem
-        item={{ date: day }}
-        onPress={(item) => {
-          this.onPressAdd(item);
-        }}
-        edit={!this.state.offline && (dateEdit || dateAbsence)} />
-    );
-  }
 
   loadDates(day) {
     let data = {
@@ -218,8 +124,7 @@ export default class MyTimesScreen extends Component {
       autoTW: data.autoTW,
       lastForbidenEditationDate: data.lastForbidenEditationDate,
       date: data.date,
-      typesArr: types,
-      selectedTypes: types[0]
+      typesToSelect: types,
     })
   }
 
@@ -326,13 +231,16 @@ export default class MyTimesScreen extends Component {
       .then(response => response.json())
       .then(res => {
         button.endLoading();
-        this.data = [];
-        this._calendar.selectDate(new Date(item.date));
-        this.showAlert(res.info, res.ok == 0);
+        this.onSaveDone(new Date(item.date), res)
       })
       .catch(() => {
         button.endLoading();
       });
+  }
+
+  onSaveDone(date, res){
+    this._calendar.selectDate(date);
+    Info.show(res.info, res.ok == 0);
   }
 
 
@@ -348,92 +256,84 @@ export default class MyTimesScreen extends Component {
     )
   }
 
-  onPressEdit(item) {
+  onPress(item, isAdd) {
     let dateTW = new Date(this.state.lastForbidenEditationDate.tw);
     let dateAb = new Date(this.state.lastForbidenEditationDate.absence);
 
     forSelectItems = [];
-    dateEdit = item.date > dateTW;
-    dateAbsence = item.date > dateAb;
+    let canEdit = item.date > dateTW;
+    let canAbsence = item.date > dateAb;
 
-    if (dateEdit) {
+    if (canEdit) {
       forSelectItems.push({ label: "Dostupný" });
     }
 
-    if (dateAbsence) {
+    if (canAbsence) {
       forSelectItems.push({ label: "Absence" });
     }
 
-
-    this.setState({
-      editedItem: item,
+    let modalToItem = {
+      editedItem: isAdd ? null : item,
       editedDate: item.date,
-      editedCanEditTW: dateEdit,
-      editedCanEditAbsence: dateAbsence,
-      timeFrom: item.start,
-      timeTo: item.end,
-      timeAbsenceLength: item.vacHours,
-      selectMain: forSelectItems.length == 0 ? forSelectItems[0] : (item.type ? { label: "Absence" } : { label: "Dostupný" }),
+      timeFrom: isAdd ? "00:00" : item.start,
+      timeTo: isAdd ? "00:00" : item.end,
+      timeAbsenceLength: isAdd ? "00:00" : item.vacHours,
+      selectMain: isAdd ? forSelectItems[0] :
+        forSelectItems.length == 0 ? forSelectItems[0] :
+          item.type ? { label: "Absence" } :
+            { label: "Dostupný" },
       forSelectItems: forSelectItems,
-      selectedTypes: item.type ? { label: item.type.name, ...item.type } : { label: "" }
-    }, () => this._modal.showModal());
+      selectedTypes: isAdd ? this.state.typesToSelect[0] :
+        item.type ? { label: item.type.name, ...item.type } :
+          { label: "" }
+    };
+
+    this._modalForm.showModal(modalToItem);
   }
 
-  onPressAdd(item) {
+  renderEmptyDate(day) {
+
     let dateTW = new Date(this.state.lastForbidenEditationDate.tw);
     let dateAb = new Date(this.state.lastForbidenEditationDate.absence);
-    forSelectItems = [];
-    dateEdit = item.date > dateTW;
-    dateAbsence = item.date > dateAb;
 
-    if (dateEdit) {
-      forSelectItems.push({ label: "Dostupný" });
-    }
+    let canEdit  = day > dateTW;
+    let canAbsence = day > dateAb;
 
-    if (dateAbsence) {
-      forSelectItems.push({ label: "Absence" });
-    }
-
-    this.setState({
-      editedItem: null,
-      editedDate: item.date,
-      editedCanEditTW: dateEdit,
-      timeFrom: "00:00",
-      timeTo: "00:00",
-      timeAbsenceLength: "00:00",
-      editedCanEditAbsence: dateAbsence,
-      forSelectItems: forSelectItems,
-      selectMain: forSelectItems[0],
-      selectedTypes: this.state.typesArr[0]
-    }, () => this._modal.showModal());
+    return (
+      <MyTimesFreeListItem
+        item={{ date: day }}
+        onPress={(item) => {
+          this.onPress(item, true);
+        }}
+        edit={!this.state.offline && (canEdit || canAbsence)} />
+    );
   }
 
   renderItem(item) {
     let dateTW = new Date(this.state.lastForbidenEditationDate.tw);
     let dateAb = new Date(this.state.lastForbidenEditationDate.absence);
 
-    dateEdit = item.items[0].date > dateTW;
-    dateAbsence = item.items[0].date > dateAb;
+    let canEdit = item.items[0].date > dateTW;
+    let canAbsence = item.items[0].date > dateAb;
 
     return (
       <MyTimesListItem item={item}
         onPressEdit={(item) => {
-          this.onPressEdit(item);
+          this.onPress(item, false);
         }}
         onPressAdd={(item) => {
-          this.onPressAdd(item);
+          this.onPress(item, true);
         }}
         onPressDelete={(button, item) => {
           this.onPressDelete(button, item);
         }}
-        editovatTW={!this.state.offline && !this.state.autoTW && dateEdit}
-        editovatAbsence={!this.state.offline && dateAbsence}
+        editovatTW={!this.state.offline && !this.state.autoTW && canEdit}
+        editovatAbsence={!this.state.offline && canAbsence}
       />
     );
   }
 
   render() {
-
     return (
       <Container>
         <OfflineNotice
@@ -448,7 +348,9 @@ export default class MyTimesScreen extends Component {
             });
           }
           } />
-        <UserSelect disabled={this.state.offline} onChange={(item) => this.setState({ selectedUserId: item.id }, () => this.reloadData())} />
+        <UserSelect
+          disabled={this.state.offline}
+          onChange={(item) => this.setState({ selectedUserId: item.id }, () => this.reloadData())} />
         <Calendar
           ref={(ref) => this._calendar = ref}
           onDayPress={(day) => this._selectedDate = new Date(day.dateString)}
@@ -463,44 +365,12 @@ export default class MyTimesScreen extends Component {
           onRefresh={(day) => this.loadOld(day)}
           refreshing={false}
         />
-        <ModalPopup ref={(ref) => this._modal = ref} onSave={() => this.onSave()}>
-          <View>
-            <View style={{ marginBottom: 10, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-              <Text>{timeToReadString(this.state.editedDate)}</Text>
-            </View>
-            <View style={{ marginBottom: 10, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-              <View style={{ flex: 1 }}>
-                <InputTime
-                  value={this.state.timeFrom}
-                  onChange={(timeFrom) => this.setState({ timeFrom })}
-                />
-              </View>
-              <Text style={{ paddingHorizontal: 10 }}>-</Text>
-              <View style={{ flex: 1 }}>
-                <InputTime
-                  value={this.state.timeTo}
-                  onChange={(timeTo) => this.setState({ timeTo })}
-                />
-              </View>
-            </View>
-            {this.state.selectMain.label == "Absence" ?
-              <View style={{ marginBottom: 10 }}>
-                <InputTime
-                  value={this.state.timeAbsenceLength}
-                  onChange={(timeAbsenceLength) => this.setState({ timeAbsenceLength })}
-                />
-              </View> : null}
-            {this.state.editedItem ?
-              null :
-              <View style={{ marginBottom: 10 }}>
-                <Select selected={this.state.selectMain} items={this.state.forSelectItems} onChange={(item) => this.setState({ selectMain: item })} />
-              </View>}
-            {this.state.selectMain.label == "Absence" ?
-              <View style={{ marginBottom: 10 }}>
-                <Select selected={this.state.selectedTypes} items={this.state.typesArr} onChange={(item) => this.setState({ selectedTypes: item })} />
-              </View> : null}
-          </View>
-        </ModalPopup>
+        <ModalMyTymesForm
+          ref={(ref) => this._modalForm = ref}
+          typesToSelect={this.state.typesToSelect}
+          navigation={this.props.navigation}
+          selectedUserId={this.state.selectedUserId}
+          onSaveDone={(date,res) => this.onSaveDone(date,res)} />
       </Container>
     );
   }

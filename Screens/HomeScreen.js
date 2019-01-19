@@ -1,18 +1,15 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
+ * Home screen
+ * - screen pro zobrazení domovské obrazovky
  */
 
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Alert } from "react-native";
-import { Container, Content, Text, Toast, Icon, Spinner, Input } from "native-base";
+import { View, TouchableOpacity } from "react-native";
+import { Container, Content, Text, Icon, Spinner, Input } from "native-base";
 import { Colors, FontSize } from "../Utils/variables";
 import Divider from "./../Components/Divider";
-import ShiftListItem from "./../Components/ShiftListItem";
-import PersonListItem from "./../Components/PersonListItem";
+import ShiftListItem from "./../Components/ListItems/ShiftListItem";
+import PersonListItem from "./../Components/ListItems/PersonListItem";
 import NoData from "./../Components/NoData";
 import OfflineNotice from "./../Components/OfflineNotice";
 import Ajax from "./../Utils/ajax";
@@ -21,6 +18,7 @@ import LoadingButton from "./../Components/LoadingButton";
 import DeviceInfo from 'react-native-device-info';
 import ModalPopup from "./../Components/ModalPopup";
 import DataStore from "./../Utils/dataStore";
+import Info from "./../Components/Info";
 
 const ACTION_TYPE = {
   clockIn: 1,
@@ -72,7 +70,7 @@ export default class HomeScreen extends Component {
           offline: false
         });
       })
-      .catch(error => {
+      .catch(() => {
         DataStore.GetHome((data) => {
           if (data == null) {
             this.setState({
@@ -91,7 +89,7 @@ export default class HomeScreen extends Component {
 
   setData(response, callback) {
     let shifts = null;
-    response.shifts.map((item, i) => {
+    response.shifts.map((item) => {
       if (shifts == null) {
         shifts = {};
       }
@@ -123,12 +121,12 @@ export default class HomeScreen extends Component {
     this.props.navigation.getScreenProps().setMenuType(this.getMenuType(response.shiftReq));
   }
 
-  getMenuType(shiftRequirements){
-    if(shiftRequirements == null){
+  getMenuType(shiftRequirements) {
+    if (shiftRequirements == null) {
       return 0;
     }
 
-    if(shiftRequirements.canEdit == 0){
+    if (shiftRequirements.canEdit == 0) {
       return 1;
     }
 
@@ -218,15 +216,6 @@ export default class HomeScreen extends Component {
     }
   }
 
-  showAlert(message) {
-    Toast.show({
-      text: message,
-      buttonText: "Ok",
-      duration: 5000,
-      position: "bottom"
-    });
-  }
-
   onPressClockSave(type, showloadingButton) {
     if (type == null) {
       type = this._lastTypeClock;
@@ -241,6 +230,7 @@ export default class HomeScreen extends Component {
         this.startLoadingButton(this._loadingButton);
       }
     }
+
     let { address, cookie } = this.props.navigation.getScreenProps();
 
     this.loadData(() => {
@@ -256,14 +246,14 @@ export default class HomeScreen extends Component {
         data["comment"] = this.state.comment;
       }
 
-      if(this.state.commentDevice != ""){
+      if (this.state.commentDevice != "") {
         data["commentComputer"] = this.state.commentDevice;
       }
 
       Ajax.post(address + this.getUrl(type), data, cookie)
         .then(response => {
           response.json().then(res => {
-            if (res.action == "fillComment" || res.action == "confirmUnallowed"){
+            if (res.action == "fillComment" || res.action == "confirmUnallowed") {
               this.setState({
                 error: res.infoMessages,
                 showCommentDevice: res.action == "confirmUnallowed"
@@ -279,23 +269,18 @@ export default class HomeScreen extends Component {
               this._modal.closeModal(() =>
                 setTimeout(() => {
                   if (res.infoMessages[0]) {
-                    this.showAlert(res.infoMessages[0][1]);
+                    Info.show(res.infoMessages[0][1], false);
                   }
                 }, 250)
-
               );
             });
           });
         })
-        .catch(error => {
+        .catch(() => {
           this.endLoadingButton();
           this._modal.closeModal();
         });
     });
-  }
-
-  getClockType() {
-    return ACTION_TYPE.clockIn
   }
 
   renderClockButton() {
@@ -312,7 +297,7 @@ export default class HomeScreen extends Component {
 
 
     if (parseInt(clock.enablePause) == 1 && clock.clockIn != null && clock.clockIn.pauseStart != null && clock.clockIn.pauseEnd == "0000-00-00 00:00:00") {
-      result.push(<View key={3} style={{ padding: 5 }}><LoadingButton  info key={ACTION_TYPE.pauseOut} ref={(ref) => this._loadingButtonPause = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseOut, true)}><Text>Pause end</Text></LoadingButton></View>);
+      result.push(<View key={3} style={{ padding: 5 }}><LoadingButton info key={ACTION_TYPE.pauseOut} ref={(ref) => this._loadingButtonPause = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseOut, true)}><Text>Pause end</Text></LoadingButton></View>);
     } else if (parseInt(clock.enablePause) == 1 && clock.clockIn != null) {
       result.push(<View key={4} style={{ padding: 5 }}><LoadingButton info key={ACTION_TYPE.pauseIn} ref={(ref) => this._loadingButtonPause = ref} small style={{ alignSelf: "flex-end" }} onPress={() => this.onPressClockSave(ACTION_TYPE.pauseIn, true)}><Text>Pause start</Text></LoadingButton></View>);
     }
@@ -368,15 +353,15 @@ export default class HomeScreen extends Component {
               {this.renderShifts()}
             </View>
           </View>
-          { this.state.shiftRequirements == null || 
+          {this.state.shiftRequirements == null ||
             (this.state.shiftRequirements != null && this.state.shiftRequirements.canEdit == 0) ?
-            null : 
+            null :
             <View>
               <Divider title="Žádosti o volné směny" />
               <View style={{ backgroundColor: Colors.lightGray }}>
                 <TouchableOpacity onPress={() => this.props.navigation.navigate('FreeShiftsAgreeDrawer')}>
                   <View style={{ justifyContent: "space-between", padding: 10, backgroundColor: "white", borderRadius: 5, margin: 10, flexDirection: "row", alignItems: "center" }}>
-                      <Text>{this.state.shiftRequirements.thisMname} - {this.state.shiftRequirements.thisMcount}</Text><Text> {this.state.shiftRequirements.nextMname} - {this.state.shiftRequirements.nextMcount}</Text>
+                    <Text>{this.state.shiftRequirements.thisMname} - {this.state.shiftRequirements.thisMcount}</Text><Text> {this.state.shiftRequirements.nextMname} - {this.state.shiftRequirements.nextMcount}</Text>
                     <Icon name="arrow-dropright" style={{ color: Colors.orange }} />
                   </View>
                 </TouchableOpacity>
@@ -409,30 +394,29 @@ export default class HomeScreen extends Component {
             <View>
               {this.state.error.map((item, i) => <Text key={i} style={{ color: Colors.red, paddingBottom: 10, textAlign: "center" }}>{item[1]}</Text>)}
             </View>
-            {this.state.showCommentDevice?
-            <View style={{ height: 100 }}>
-              <Input
-                style={{ flex: 1 }}
-                error={this.state.commentDeviceError}
-                value={this.state.commentDevice}
-                placeholder="Proč používáte jiné zařízení"
-                onChangeText={(commentDevice) => this.setState({ commentDevice, commentDeviceError: commentDevice == "" })}
-                multiline={true}
-              />
-            </View> : null}
+            {this.state.showCommentDevice ?
+              <View style={{ height: 100 }}>
+                <Input
+                  style={{ flex: 1 }}
+                  error={this.state.commentDeviceError}
+                  value={this.state.commentDevice}
+                  placeholder="Proč používáte jiné zařízení"
+                  onChangeText={(commentDevice) => this.setState({ commentDevice, commentDeviceError: commentDevice == "" })}
+                  multiline={true}
+                />
+              </View> : null}
 
-             {!this.state.showCommentDevice?
-            <View style={{ height: 100, marginTop: 10 }}>
-              <Input
-                style={{ flex: 1 }}
-                error={this.state.commentError}
-                value={this.state.comment}
-                placeholder="Komentář k vašemu příchodu"
-                onChangeText={(comment) => this.setState({ comment, commentError: comment == "" })}
-                multiline={true}
-              />
-            </View> : null}
-            
+            {!this.state.showCommentDevice ?
+              <View style={{ height: 100, marginTop: 10 }}>
+                <Input
+                  style={{ flex: 1 }}
+                  error={this.state.commentError}
+                  value={this.state.comment}
+                  placeholder="Komentář k vašemu příchodu"
+                  onChangeText={(comment) => this.setState({ comment, commentError: comment == "" })}
+                  multiline={true}
+                />
+              </View> : null}
           </View>
         </ModalPopup>
       </Container>

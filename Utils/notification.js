@@ -1,3 +1,8 @@
+/**
+ * Třída pro notifikace
+ */
+
+
 var PushNotification = require('react-native-push-notification');
 import { PushNotificationIOS, Platform } from "react-native";
 import DataStore from "./dataStore";

@@ -1,12 +1,16 @@
+/**
+ * Komponenta pro výpis levého menu
+ */
+
+
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SafeAreaView, } from 'react-navigation';
 import { Text, Accordion,Icon } from "native-base";
 import TouchableItem from 'react-navigation/src/views/TouchableItem'
 import { Colors } from '../Utils/variables';
-/**
- * Component that renders the navigation list in the drawer.
- */
+
+
 class Menu extends Component {
 
   renderItem(route, index,padding) {

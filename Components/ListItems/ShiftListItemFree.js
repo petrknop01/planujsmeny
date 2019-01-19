@@ -1,7 +1,11 @@
-import React, { Component } from 'react';
+/**
+ * Řádek pro volné směn
+ */
+
+import React from 'react';
 import { View } from "react-native";
 import { Text } from "native-base";
-import { Colors, FontSize, DayNamesShort } from "../Utils/variables";
+import { Colors, FontSize, DayNamesShort } from "./../../Utils/variables";
 
 
 export default function ShiftListItemFree(props) {
@@ -14,10 +18,6 @@ export default function ShiftListItemFree(props) {
 
             <View style={{
                 borderRadius: 5,
-                // shadowRadius: 4,
-                // shadowOffset: { width: 2, height: 0 },
-                // shadowColor: 'black',
-                // shadowOpacity: 0.2,
                 justifyContent: "center",
                 overflow: "hidden",
                 backgroundColor: "white",

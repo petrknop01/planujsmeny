@@ -1,13 +1,12 @@
 /**
- * Futbalito app, starting layout
+ * Komponenta pro modální okno
  */
+
 
 import React, { Component } from 'react';
 import variable from "./../native-base-theme/variables/platform";
 
 import {
-    ScrollView,
-    TouchableOpacity,
     View,
     Modal,
 } from 'react-native';
@@ -22,7 +21,7 @@ import {
 
 import LoadingButton from './LoadingButton';
 
-import { Colors, FontSize } from "../Utils/variables";
+import { Colors } from "../Utils/variables";
 
 export default class ModalPopup extends Component {
     _loadingButton = null;

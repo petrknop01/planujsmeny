@@ -1,10 +1,8 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
+ * Login screen
+ * - screen pro přihlášení
  */
+
 
 import React, { Component } from 'react';
 import { Platform, View, Image, Dimensions, TouchableOpacity, Linking, Alert } from "react-native";
@@ -21,9 +19,7 @@ import { UrlsFull, UrlsApi } from "./../Utils/urls";
 
 const width = Dimensions.get("window").width / 2;
 
-
 export default class LoginScreen extends Component {
-
   _loadingButton = null;
   state = {
     isPrivateServer: false,
@@ -46,33 +42,18 @@ export default class LoginScreen extends Component {
     }
 
     const { name, password, address, isPrivateServer } = this.state;
-
     this.togleLoadingButton(this._loadingButton);
-
-    let adresa = isPrivateServer ? address : UrlsApi.base_url;
-
-    Ajax.post(adresa + UrlsApi.login, { name: name, pw: password })
-      .then(response => {
-        var cookies = response.headers.get('set-cookie');
-        response.json().then(res => {
-          this.togleLoadingButton(this._loadingButton);
-          if (res.ok == 0) {
-            this.showError(res.message);
-          } else {
-            this.loginOk(res.IDuser, res.username, adresa, res.appKey, cookies);
-          }
-        });
-      })
-      .catch(error => {
-        this.showError(error.message);
-        this.togleLoadingButton(this._loadingButton);
-      });
+    let baseUrl = isPrivateServer ? address : UrlsApi.base_url;
+    this.login(baseUrl, baseUrl + UrlsApi.login, { name: name, pw: password });
   }
 
   onPressLoginDemo = () => {
+    this.login(UrlsApi.base_url, UrlsApi.base_url + UrlsApi.demoLogin, {name: "test", pw: "test" });
+  }
+
+  login(baseUrl, url, loginCredentials){
     this.togleLoadingButton(this._loadingButtonDemo);
-    let adresa = UrlsApi.base_url;
-    Ajax.post(adresa + UrlsApi.demoLogin, {name: "test", pw: "test" }) 
+    Ajax.post(url, loginCredentials) 
       .then(response => {
         var cookies = response.headers.get('set-cookie');
         response.json().then(res => {
@@ -80,7 +61,7 @@ export default class LoginScreen extends Component {
           if (res.ok == 0) {
             this.showError(res.message);
           } else {
-            this.loginOk(res.IDuser, res.username, adresa, res.appKey, cookies);
+            this.loginOk(res.IDuser, res.username, baseUrl, res.appKey, cookies);
           }
         });
       })
@@ -110,7 +91,6 @@ export default class LoginScreen extends Component {
     }
 
     return !hasError;
-
   }
 
   showError(error) {

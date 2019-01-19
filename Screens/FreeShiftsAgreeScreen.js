@@ -1,14 +1,10 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
+ * Setting screen
+ * - screen pro zobrazení směn obrazovky které se mají přijmout
  */
 
 import React, { Component } from 'react';
-import { Alert } from "react-native";
-import { Container, Toast } from "native-base";
+import { Container } from "native-base";
 import { Colors } from "../Utils/variables";
 import { UrlsApi } from "./../Utils/urls";
 import { xdateToData, calculateDate, timeToString } from "./../Utils/functions";
@@ -17,17 +13,12 @@ import XDate from 'xdate';
 import Calendar from "./../Components/Calendar";
 import Ajax from "./../Utils/ajax";
 import DataStore from "./../Utils/dataStore";
-import ModalPlansAbsence from "./../Components/ModalPlansAbsenceFree"
-import ModalPlansShifts from "./../Components/ModalPlansShifts"
+import ModalShifts from "./../Components/Modals/ModalShifts"
+import ModalAbsence from "./../Components/Modals/ModalFreeShiftsAbsence"
 
-import FreeShiftListItemManager from "./../Components/FreeShiftListItemManager";
+import FreeShiftListItemManager from "./../Components/ListItems/FreeShiftListItemManager";
 import OfflineNotice from "./../Components/OfflineNotice";
-
-const TYPE = {
-  unasShifts: 0,
-  plannedShifts: 1,
-  absences: 2,
-}
+import Info from "./../Components/Info"
 
 export default class FreeShiftsScreen extends Component {
   offline = false;
@@ -67,28 +58,6 @@ export default class FreeShiftsScreen extends Component {
       });
       this._calendar.selectDate(this._selectedDate);
     }
-  }
-
-
-  showAlert(message, isError) {
-    if (isError) {
-      Alert.alert(
-        "Chyba",
-        message,
-        [
-          { text: 'Ok', onPress: () => { }, style: 'cancel' },
-        ],
-        { cancelable: false }
-      )
-      return;
-    }
-
-    Toast.show({
-      text: message,
-      buttonText: "Ok",
-      duration: 5000,
-      position: "bottom"
-    });
   }
 
   loadItems(day) {
@@ -237,14 +206,14 @@ export default class FreeShiftsScreen extends Component {
       }
     }
 
-    this.itemsToShiftObject(items.unasShifts, TYPE.unasShifts);
+    this.itemsToShiftObject(items.unasShifts);
 
     const newItems = {};
     Object.keys(this.data).forEach(key => { newItems[key] = this.data[key]; });
     return newItems;
   }
 
-  itemsToShiftObject(items, type) {
+  itemsToShiftObject(items) {
     for (const key in items) {
       if (items.hasOwnProperty(key)) {
         const item = items[key];
@@ -275,7 +244,7 @@ export default class FreeShiftsScreen extends Component {
                   insertUnasShifts.requests.push(
                     {
                       userName: this.getUserName(req.reqUser),
-                      color: this.getUserColor(req.reqUser),
+                      color: this.getUserColor(),
                       statusReq:req.statusReq,
                       idReq:req.IDreq,
                       dateReq:req.dateReq,
@@ -318,10 +287,7 @@ export default class FreeShiftsScreen extends Component {
     return null;
   }
 
-  getUserColor(id) {
-    // if (this.state.users.hasOwnProperty("id" + id)) {
-    //   return this.state.users["id" + id].color;
-    // }
+  getUserColor() {
     return "#000000";
   }
 
@@ -380,7 +346,7 @@ export default class FreeShiftsScreen extends Component {
         });
         button.endLoading();
         this._calendar.selectDate(new Date(item.date));
-        this.showAlert(res.infoMessages[0][1], res.ok == 0);
+        Info.show(res.infoMessages[0][1], res.ok == 0);
         scheduleNotification();
       })
       .catch(() => {
@@ -389,15 +355,6 @@ export default class FreeShiftsScreen extends Component {
   }
 
   onPressCancel(button, item) {
-    // Alert.alert(
-    //   "Vymazat",
-    //   "Opravdu chcete zrušit naplánovanou směnu?",
-    //   [
-    //     { text: 'Ano', onPress: () => this.onCancel(button, item) },
-    //     { text: 'Ne', onPress: () => { }, style: 'cancel' },
-    //   ],
-    //   { cancelable: false }
-    // )
     this.onCancel(button, item)
   }
 
@@ -420,7 +377,7 @@ export default class FreeShiftsScreen extends Component {
         button.endLoading();
         this._calendar.selectDate(new Date(item.date));
         this.data[strTime][0].unasShifts = [];
-        this.showAlert(res.infoMessages[0][1], res.ok == 0);
+        Info.show(res.infoMessages[0][1], res.ok == 0);
         scheduleNotification();
       })
       .catch(() => {
@@ -429,11 +386,11 @@ export default class FreeShiftsScreen extends Component {
   }
 
   onPressHome(item) {
-    this._modalPlansAbsence.open(item);
+    this._modalAbsence.open(item);
   }
 
   onPressPlannedShifts(item) {
-    this._modalPlansShifts.open(item);
+    this._modalShifts.open(item);
   }
 
   noEdit(actualDate) {
@@ -484,11 +441,11 @@ export default class FreeShiftsScreen extends Component {
           loadItemsForMonth={(day) => this.loadItems(day)}
           onRefresh={(day) => this.loadOld(day)}
           refreshing={false}
-          rowHasChanged={(r1, r2) => r1.change == true}
+          rowHasChanged={(r1) => r1.change == true}
         />
 
-        <ModalPlansShifts ref={(ref) => this._modalPlansShifts = ref} />
-        <ModalPlansAbsence ref={(ref) => this._modalPlansAbsence = ref} />
+        <ModalShifts ref={(ref) => this._modalShifts = ref} />
+        <ModalAbsence ref={(ref) => this._modalAbsence = ref} />
       </Container>
     );
   }

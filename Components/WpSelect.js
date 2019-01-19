@@ -1,17 +1,11 @@
 /**
- * Futbalito app, starting layout
+ * Komponenta pro výběr pracovního místa
  */
 
 import React, { Component } from 'react';
-
-import {
-    View} from 'react-native';
-
-
-import Ajax from "./../Utils/ajax";
+import {View} from 'react-native';
 import { withNavigation } from 'react-navigation';
 import Select from "./Select";
-import { UrlsApi } from "./../Utils/urls";
 
 
 export class WpSelect extends Component {

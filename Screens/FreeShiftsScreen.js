@@ -1,26 +1,23 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
+ * Setting screen
+ * - screen pro zobrazení volných směn
  */
 
 import React, { Component } from 'react';
-import { Alert } from "react-native";
-import { Container, Toast } from "native-base";
+import { Container } from "native-base";
 import { Colors } from "../Utils/variables";
 import { UrlsApi } from "./../Utils/urls";
 import { xdateToData, calculateDate, timeToString } from "./../Utils/functions";
 import XDate from 'xdate';
+import Info from "./../Components/Info";
 
 import Calendar from "./../Components/Calendar";
 import Ajax from "./../Utils/ajax";
 import DataStore from "./../Utils/dataStore";
-import ModalPlansAbsence from "./../Components/ModalPlansAbsenceFree"
-import ModalPlansShifts from "./../Components/ModalPlansShifts"
+import ModalAbsence from "./../Components/Modals/ModalFreeShiftsAbsence"
+import ModalShifts from "./../Components/Modals/ModalShifts"
 
-import FreeShiftListItem from "./../Components/FreeShiftListItem";
+import FreeShiftListItem from "./../Components/ListItems/FreeShiftListItem";
 import OfflineNotice from "./../Components/OfflineNotice";
 
 const TYPE = {
@@ -67,28 +64,6 @@ export default class FreeShiftsScreen extends Component {
       });
       this._calendar.selectDate(this._selectedDate);
     }
-  }
-
-
-  showAlert(message, isError) {
-    if (isError) {
-      Alert.alert(
-        "Chyba",
-        message,
-        [
-          { text: 'Ok', onPress: () => { }, style: 'cancel' },
-        ],
-        { cancelable: false }
-      )
-      return;
-    }
-
-    Toast.show({
-      text: message,
-      buttonText: "Ok",
-      duration: 5000,
-      position: "bottom"
-    });
   }
 
   loadItems(day) {
@@ -397,7 +372,7 @@ export default class FreeShiftsScreen extends Component {
         });
         button.endLoading();
         this._calendar.selectDate(new Date(item.date));
-        this.showAlert(res.infoMessages[0][1], res.ok == 0);
+        Info.show(res.infoMessages[0][1], res.ok == 0);
       })
       .catch(() => {
         button.endLoading();
@@ -405,16 +380,6 @@ export default class FreeShiftsScreen extends Component {
   }
 
   onPressDelete(button, item) {
-    // Alert.alert(
-    //   "Vymazat",
-    //   "Opravdu chcete zrušit naplánovanou směnu?",
-    //   [
-    //     { text: 'Ano', onPress: () => this.onDelete(button, item) },
-    //     { text: 'Ne', onPress: () => { }, style: 'cancel' },
-    //   ],
-    //   { cancelable: false }
-    // )
-
     this.onDelete(button, item);
   }
 
@@ -436,7 +401,7 @@ export default class FreeShiftsScreen extends Component {
         });
         button.endLoading();
         this._calendar.selectDate(new Date(item.date));
-        this.showAlert(res.infoMessages[0][1], res.ok == 0);
+        Info.show(res.infoMessages[0][1], res.ok == 0);
       })
       .catch(() => {
         button.endLoading();
@@ -444,11 +409,11 @@ export default class FreeShiftsScreen extends Component {
   }
 
   onPressHome(item) {
-    this._modalPlansAbsence.open(item);
+    this._modalAbsence.open(item);
   }
 
   onPressPlannedShifts(item) {
-    this._modalPlansShifts.open(item);
+    this._modalShifts.open(item);
   }
 
   noEdit(actualDate) {
@@ -501,11 +466,11 @@ export default class FreeShiftsScreen extends Component {
           loadItemsForMonth={(day) => this.loadItems(day)}
           onRefresh={(day) => this.loadOld(day)}
           refreshing={false}
-          rowHasChanged={(r1, r2) => r1.change == true}
+          rowHasChanged={(r1) => r1.change == true}
         />
 
-        <ModalPlansShifts ref={(ref) => this._modalPlansShifts = ref} />
-        <ModalPlansAbsence ref={(ref) => this._modalPlansAbsence = ref} />
+        <ModalShifts ref={(ref) => this._modalShifts = ref} />
+        <ModalAbsence ref={(ref) => this._modalAbsence = ref} />
       </Container>
     );
   }

@@ -1,8 +1,11 @@
+/**
+ * Komponenta kalendáře
+ */
 
 
 import React, { Component } from 'react';
 import { View } from "react-native";
-import { Text, Spinner } from "native-base";
+import { Spinner } from "native-base";
 
 import { Colors, MonthNames, MonthNamesShort, DayNames, DayNamesShort } from "../Utils/variables";
 
@@ -44,7 +47,7 @@ export default class Calendar extends Component {
         return JSON.stringify(r1) !== JSON.stringify(r2) ;
     }
 
-    renderDay(day, item){
+    renderDay(){
         return null;
     }
 
@@ -81,7 +84,7 @@ export default class Calendar extends Component {
         return (
             <Agenda
                 ref={ref => this._agenda = ref}
-                renderDay={(day, item) => this.renderDay(day,item)}
+                renderDay={(day, item) => this.renderDay()}
                 rowHasChanged={this.rowHasChanged.bind(this)}
                 renderEmptyData = {() => {return (<Spinner size="large" />);}}
                 theme={{

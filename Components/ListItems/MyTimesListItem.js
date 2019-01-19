@@ -1,9 +1,13 @@
-import React, { Component } from 'react';
+/**
+ * Řádek pro časovou možnost
+ */
+
+import React from 'react';
 import { View } from "react-native";
 import { Text, Button } from "native-base";
-import { Colors, FontSize, DayNamesShort } from "../Utils/variables";
-import { invertColor } from "../Utils/functions";
-import  LoadingButton  from "../Components/LoadingButton";
+import { FontSize, DayNamesShort } from "./../../Utils/variables";
+import { invertColor } from "./../../Utils/functions";
+import  LoadingButton  from "./../../Components/LoadingButton";
 
 export default function MyTimesListItem(props) {
     let ref = null;

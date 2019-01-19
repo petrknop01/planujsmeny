@@ -1,3 +1,8 @@
+/**
+ * Třída pro ukládání dat
+ */
+
+
 import {
   AsyncStorage
 } from 'react-native';

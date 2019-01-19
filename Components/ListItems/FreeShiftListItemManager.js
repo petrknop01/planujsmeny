@@ -1,9 +1,13 @@
-import React, { Component } from 'react';
-import { View, TouchableOpacity } from "react-native";
-import { Text, Button, Icon, Accordion } from "native-base";
-import { Colors, FontSize, DayNamesShort } from "../Utils/variables";
-import { invertColor,timeToReadString } from "../Utils/functions";
-import LoadingButton from "./../Components/LoadingButton"
+/**
+ * Řádek pro potvrzení žádosti volné směny
+ */
+
+import React from 'react';
+import { View } from "react-native";
+import { Text, Icon, Accordion } from "native-base";
+import { Colors, FontSize, DayNamesShort } from "./../../Utils/variables";
+import { invertColor,timeToReadString } from "./../../Utils/functions";
+import LoadingButton from "./../../Components/LoadingButton"
 
 function getColor(state) {
     switch (parseInt(state)) {
@@ -135,7 +139,7 @@ export default function FreeShiftListItemManager(props) {
             </View>
             <View style={{ flex: 1 }}>
                 <View>
-                    {props.item.unasShifts.map((item, i) => <UnasShifts noEdit={props.noEdit} key={item.id} item={item} onPressAccept={(button, item) => props.onPressAccept(button, item)} onPressCancel={(button, item) => props.onPressCancel(button, item)} />)}
+                    {props.item.unasShifts.map((item) => <UnasShifts noEdit={props.noEdit} key={item.id} item={item} onPressAccept={(button, item) => props.onPressAccept(button, item)} onPressCancel={(button, item) => props.onPressCancel(button, item)} />)}
                     {props.item.unasShifts.length == 0 ? <View
                         style={{
                             borderRadius: 5,

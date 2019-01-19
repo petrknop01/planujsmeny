@@ -1,10 +1,7 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
+ * Komponenta pro tlačítko s loadingem
  */
+
 
 import React, { Component } from 'react';
 import { Button, Spinner } from "native-base";

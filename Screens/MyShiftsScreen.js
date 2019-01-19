@@ -1,9 +1,6 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
+ * Setting screen
+ * - screen pro zobrazení směn obrazovky
  */
 
 import React, { Component } from 'react';
@@ -12,8 +9,8 @@ import Ajax from "./../Utils/ajax";
 import { UrlsApi } from "./../Utils/urls";
 import { xdateToData, calculateDate, timeToString } from "./../Utils/functions";
 import OfflineNotice from "./../Components/OfflineNotice";
-import ShiftListItemFree from "./../Components/ShiftListItemFree";
-import ShiftListItem from "./../Components/ShiftListItem";
+import ShiftListItemFree from "./../Components/ListItems/ShiftListItemFree";
+import ShiftListItem from "./../Components/ListItems/ShiftListItem";
 import Calendar from "./../Components/Calendar";
 import UserSelect from "./../Components/UserSelect";
 
@@ -241,16 +238,6 @@ export default class MyShiftsScreen extends Component {
     }
   }
 
-  renderItem(item) {
-    return (
-      <ShiftListItem item={item} />
-    );
-  }
-
-  renderEmptyDate(day) {
-    return <ShiftListItemFree item={{ date: day }} />;
-  }
-
   loadOld() {
     if (this._calendar) {
       this._selectedDate.setDate(this._selectedDate.getDate() - 7);
@@ -261,6 +248,17 @@ export default class MyShiftsScreen extends Component {
     }
   }
 
+
+  renderItem(item) {
+    return (
+      <ShiftListItem item={item} />
+    );
+  }
+
+  renderEmptyDate(day) {
+    return <ShiftListItemFree item={{ date: day }} />;
+  }
+  
   render() {
     return (
       <Container style={{ backgroundColor: "gray" }}>

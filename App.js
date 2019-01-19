@@ -1,16 +1,12 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
+ * Základní soubor pro aplikaci
  */
 
 import React, { Component } from 'react';
-import {AppState, Alert} from "react-native";
+import { AppState } from "react-native";
 import Router from "./Router";
 import LoginScreen from "./Screens/LoginScreen"
-import { Container, StyleProvider, Root } from "native-base";
+import { Container, StyleProvider, Root, Text } from "native-base";
 import getTheme from './native-base-theme/components';
 import platform from './native-base-theme/variables/platform';
 import DataStore from "./Utils/dataStore";
@@ -29,24 +25,20 @@ export default class App extends Component {
     cookie: null,
     loading: true,
     menuType: 0,
-    appState: AppState.currentState
+    appState: AppState.currentState,
+    error: false
   }
-  
+
   notification = new Notification();
 
-  componentDidMount(){
+  componentDidMount() {
     AppState.addEventListener('change', this.onAppStateChange);
   }
 
-  componentDidCatch(error, errorInfo){
-    Alert.alert(
-      "Chyba",
-      "Nastala neočekávaná chyba aplikace, prosím zapněte a vypněte aplikaci",
-      [
-        { text: 'Ok', onPress: () => { }, style: 'cancel' },
-      ],
-      { cancelable: false }
-    )
+  componentDidCatch(error, errorInfo) {
+    this.setState({
+      error: true
+    });
   }
 
   componentWillMount() {
@@ -63,10 +55,10 @@ export default class App extends Component {
           cookie: data.Cookie,
           appKey: data.AppKey,
         }, () => this.relogin(() => {
-          this.setState({loading: false});
-          if(this.state.userID){
+          this.setState({ loading: false });
+          if (this.state.userID) {
             this.scheduleNotification();
-          }else{
+          } else {
             this.clearNotification();
           }
         }));
@@ -78,15 +70,15 @@ export default class App extends Component {
     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
       this.scheduleNotification();
     }
-    this.setState({appState: nextAppState});
+    this.setState({ appState: nextAppState });
   }
 
-  scheduleNotification(){
-    const { address, cookie} = this.state;
+  scheduleNotification() {
+    const { address, cookie } = this.state;
     this.notification.scheduleNotification(address, cookie, this.relogin);
   }
 
-  clearNotification(){
+  clearNotification() {
     this.notification.clearNotification();
   }
 
@@ -126,15 +118,16 @@ export default class App extends Component {
       this.state.userID == null ?
         <LoginScreen loginOk={(userID, username, address, appKey, cookie) => this.setState({ userID, username, address, appKey, cookie })} /> :
         <Router screenProps={{
-           setMenuType: (type) => this.setState({menuType: type}),
-           relogin: (callback) => this.relogin(callback), 
-           logOut: () => {
-             this.clearNotification();
-             this.setState({ userID: null, username: null, appKey: null, address: null })
-            }, 
-            scheduleNotification: () => this.scheduleNotification(),
-           showSetting: () => this._settingScreen.open(),
-           ...this.state }} />
+          setMenuType: (type) => this.setState({ menuType: type }),
+          relogin: (callback) => this.relogin(callback),
+          logOut: () => {
+            this.clearNotification();
+            this.setState({ userID: null, username: null, appKey: null, address: null })
+          },
+          scheduleNotification: () => this.scheduleNotification(),
+          showSetting: () => this._settingScreen.open(),
+          ...this.state
+        }} />
     );
   }
 
@@ -143,12 +136,18 @@ export default class App extends Component {
   render() {
     return (
       <StyleProvider style={getTheme(platform)}>
-      <Root>
-        <Container>
-          {this.renderInner()}
-          <SettingScreen ref={ref => this._settingScreen = ref} scheduleNotification={() => this.scheduleNotification()}/>
-        </Container>
-        </Root>
+        {this.state.error ?
+          <Container style={{ justifyContent: "center", alignItems: "center", padding: 20 }}>
+            <Text style={{ textAlign: "center" }}>Nastala neočekávaná chyba aplikace. Vypněte a zapněte aplikaci.</Text>
+          </Container>
+          :
+          <Root>
+            <Container>
+              {this.renderInner()}
+              <SettingScreen ref={ref => this._settingScreen = ref} scheduleNotification={() => this.scheduleNotification()} />
+            </Container>
+          </Root>
+        }
       </StyleProvider>
     );
   }

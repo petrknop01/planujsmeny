@@ -1,16 +1,20 @@
+/**
+ * Modal pro naplánování směny
+ */
 
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Modal, Alert } from "react-native";
-import { Input, Container, Header, Title, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text } from 'native-base';
-import ModalPopup from "./../Components/ModalPopup";
-import InputTime from "./../Components/InputTime";
-import Select from "./../Components/Select";
-import { UrlsApi } from "./../Utils/urls";
-import Ajax from "./../Utils/ajax";
-import CustomSelectUser from "./../Components/CustomSelectUser";
-import {timeToReadString} from "./../Utils/functions";
+import { View, Alert } from "react-native";
+import { Text } from 'native-base';
+import ModalPopup from "./../../Components/ModalPopup";
+import InputTime from "./../../Components/InputTime";
+import Select from "./../../Components/Select";
+import { UrlsApi } from "./../../Utils/urls";
+import Ajax from "./../../Utils/ajax";
+import CustomSelectUser from "./../../Components/CustomSelectUser";
+import {timeToReadString} from "./../../Utils/functions";
+import Info from "./../../Components/Info";
 
-class ModalForm extends Component {
+class ModalPlansForm extends Component {
     state = {
         timeFrom: "08:00",
         timeTo: "16:00",
@@ -51,17 +55,6 @@ class ModalForm extends Component {
         }
     }
 
-    showAlert(message) {
-        Alert.alert(
-            "Chyba",
-            message,
-            [
-                { text: 'Ok', onPress: () => { }, style: 'cancel' },
-            ],
-            { cancelable: false }
-        )
-    }
-
     getUsers() {
         if (this.state.selectedJob.id == null) {
             return;
@@ -86,7 +79,7 @@ class ModalForm extends Component {
                         userList: [],
                         selectedUserId: null,
                     })
-                    this.showAlert(res.infoMessages[0][1]);
+                    Info.show(res.infoMessages[0][1],true);
                 }
 
                 let inArray =  false;
@@ -185,4 +178,4 @@ class ModalForm extends Component {
 }
 
 
-export default ModalForm;
+export default ModalPlansForm;

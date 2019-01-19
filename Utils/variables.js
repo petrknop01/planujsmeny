@@ -1,3 +1,8 @@
+/**
+ * Třída pro konstanty
+ */
+
+
 export const Colors = {
     orange: "#f2b149",
     header: "#292929",

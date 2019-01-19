@@ -1,3 +1,7 @@
+/**
+ * Komponenta pro výpis offline značky
+ */
+
 import React, { Component } from 'react';
 import { View, NetInfo } from 'react-native';
 import { Text } from "native-base";

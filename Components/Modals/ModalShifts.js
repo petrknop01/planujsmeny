@@ -1,9 +1,12 @@
+/**
+ * Modal pro výpis směn
+ */
 
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Modal } from "react-native";
-import { Container, Header, Title, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text } from 'native-base';
-import { invertColor } from "../Utils/functions";
-import { Colors, FontSize, DayNamesShort } from "../Utils/variables";
+import { View, Modal } from "react-native";
+import { Container, Header, Title, Content, Button, Left, Right, Body, Text } from 'native-base';
+import { invertColor } from "./../../Utils/functions";
+import { Colors, FontSize } from "./../../Utils/variables";
 
 function PlannedShifts({ item }) {
     return (
@@ -24,7 +27,7 @@ function PlannedShifts({ item }) {
     );
 }
 
-export default class ModalPlansShifts extends Component {
+export default class ModalShifts extends Component {
     state={
         open: false,
         plannedShifts: [],

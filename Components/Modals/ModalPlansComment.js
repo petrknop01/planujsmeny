@@ -1,10 +1,13 @@
+/**
+ * Modal pro zadání komentářu
+ */
 
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Modal, Alert } from "react-native";
-import { Input, Container, Header, Title, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text } from 'native-base';
-import ModalPopup from "./../Components/ModalPopup";
-import { UrlsApi } from "./../Utils/urls";
-import Ajax from "./../Utils/ajax";
+import { View } from "react-native";
+import { Input } from 'native-base';
+import ModalPopup from "./../../Components/ModalPopup";
+import { UrlsApi } from "./../../Utils/urls";
+import Ajax from "./../../Utils/ajax";
 
 export default class ModalPlansComment extends Component {
     state = {

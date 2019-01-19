@@ -1,32 +1,28 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
+ * Setting screen
+ * - screen pro zobrazení naplánovaných směn obrazovky
  */
 
+
 import React, { Component } from 'react';
-import { View, Alert } from "react-native";
-import { Container, Text, Toast } from "native-base";
+import { Alert } from "react-native";
+import { Container } from "native-base";
 import { Colors } from "../Utils/variables";
 import { UrlsApi } from "./../Utils/urls";
 import { xdateToData, calculateDate, timeToString } from "./../Utils/functions";
 import XDate from 'xdate';
+import Info from "./../Components/Info";
 
 import Calendar from "./../Components/Calendar";
 import Ajax from "./../Utils/ajax";
 import DataStore from "./../Utils/dataStore";
 
-import Select from "./../Components/Select";
-import PlanShiftListItem from "./../Components/PlanShiftListItem";
+import PlanShiftListItem from "./../Components/ListItems/PlanShiftListItem";
 import OfflineNotice from "./../Components/OfflineNotice";
-import ModalPopup from "./../Components/ModalPopup";
-import InputTime from "./../Components/InputTime";
 import WpSelect from "./../Components/WpSelect"
-import ModalPlansAbsence from "./../Components/ModalPlansAbsence"
-import ModalPlansComment from "./../Components/ModalPlansComment"
-import ModalForm from "./../Components/ModalForm"
+import ModalPlansAbsence from "./../Components/Modals/ModalPlansAbsence"
+import ModalPlansComment from "./../Components/Modals/ModalPlansComment"
+import ModalPlansForm from "./../Components/Modals/ModalPlansForm"
 
 const TYPE = {
   notHomeShifts: 0,
@@ -76,27 +72,6 @@ export default class PlansShiftsScreen extends Component {
       });
       this._calendar.selectDate(this._selectedDate);
     }
-  }
-
-  showAlert(message, isError) {
-    if (isError) {
-      Alert.alert(
-        "Chyba",
-        message,
-        [
-          { text: 'Ok', onPress: () => { }, style: 'cancel' },
-        ],
-        { cancelable: false }
-      )
-      return;
-    }
-
-    Toast.show({
-      text: message,
-      buttonText: "Ok",
-      duration: 5000,
-      position: "bottom"
-    });
   }
 
   loadItems(day) {
@@ -452,7 +427,7 @@ export default class PlansShiftsScreen extends Component {
           }
           );
         }
-        this.showAlert(res.infoMessages[0][1], res.ok == 0);
+        Info.show(res.infoMessages[0][1], res.ok == 0);
       })
       .catch(() => {
         button.endLoading();
@@ -528,7 +503,7 @@ export default class PlansShiftsScreen extends Component {
       }
     );
     setTimeout(() => {
-      this.showAlert(res.infoMessages[0][1], res.ok == 0);
+      Info.show(res.infoMessages[0][1], res.ok == 0);
     }, 250);
   }
 
@@ -579,11 +554,11 @@ export default class PlansShiftsScreen extends Component {
           loadItemsForMonth={(day) => this.loadItems(day)}
           onRefresh={(day) => this.loadOld(day)}
           refreshing={false}
-          rowHasChanged={(r1, r2) => r1.change == true}
+          rowHasChanged={(r1) => r1.change == true}
         />
         <ModalPlansAbsence ref={(ref) => this._modalPlansAbsence = ref} />
         <ModalPlansComment ref={(ref) => this._modalPlansComments = ref} navigation={this.props.navigation} onSaveDone={(date, res) => this.onSaveDone(date, res, 0)}/>
-        <ModalForm ref={(ref) => this._modalForm = ref} navigation={this.props.navigation} onSaveDone={(date, res, index) => this.onSaveDone(date, res, index)} />
+        <ModalPlansForm ref={(ref) => this._modalForm = ref} navigation={this.props.navigation} onSaveDone={(date, res, index) => this.onSaveDone(date, res, index)} />
       </Container>
     );
   }

@@ -1,7 +1,11 @@
-import React, { Component } from 'react';
+/**
+ * Řádek pro uživatele
+ */
+
+import React from 'react';
 import { View } from "react-native";
 import { Text } from "native-base";
-import { Colors, FontSize } from "../Utils/variables";
+import { Colors } from "./../../Utils/variables";
 
 export default function PersonListItem(props) {
     return (

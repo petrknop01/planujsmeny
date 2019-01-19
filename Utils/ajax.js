@@ -1,22 +1,12 @@
+/**
+ * Třída pro obsluhu ajax requestů
+ */
 
-import { NetInfo } from 'react-native';
 import CookieManager from "react-native-cookies";
-import UrlsApi from "./urls";
 
 class Ajax {
     isConnected = true;
-
-    // constructor() {
-    //     NetInfo.isConnected.fetch((isConnected) => this.isConnected = isConnected)
-    //     NetInfo.isConnected.addEventListener('connectionChange', (isConnected) => this.isConnected = isConnected);
-    // }
-
     get = (adresa, data, cookies) => {
-        console.log(adresa);
-        // if (!this.isConnected) {
-        //     return Promise.reject(new Error('Není připojení k internetu'))
-        // }
-
         let dataArr = [];
         for (const key in data) {
             if (data.hasOwnProperty(key)) {
@@ -52,11 +42,6 @@ class Ajax {
     }
 
     post = (adresa, data, cookies) => {
-        console.log(adresa);
-        // if (!this.isConnected) {
-        //     return Promise.reject(new Error('Není připojení k internetu'))
-        // }
-
         let formData = new FormData();
         for (const key in data) {
             if (data.hasOwnProperty(key)) {

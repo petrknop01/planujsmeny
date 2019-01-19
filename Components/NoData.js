@@ -1,7 +1,11 @@
+/**
+ * Komponenta pro výpis bez dat
+ */
+
+
 import React, { Component } from 'react';
 import { View } from "react-native";
 import { Text } from "native-base";
-import { Colors, FontSize } from "../Utils/variables";
 
 export default function NoData(props) {
     return (

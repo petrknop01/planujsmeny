@@ -1,7 +1,11 @@
-import React, { Component } from 'react';
+/**
+ * Řádek pro časovou možnost když v danném datu není nic zadáno
+ */
+
+import React from 'react';
 import { View } from "react-native";
-import { Text, Button, Icon } from "native-base";
-import { Colors, FontSize,DayNamesShort } from "../Utils/variables";
+import { Text, Button } from "native-base";
+import { Colors, FontSize,DayNamesShort } from "./../../Utils/variables";
 
 
 

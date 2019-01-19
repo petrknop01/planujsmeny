@@ -1,15 +1,10 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
+ * Komponenta pro input času
  */
 
 import React, { Component } from 'react';
 import { TouchableOpacity, View } from "react-native";
-import { Input, Text } from "native-base";
-import { Colors } from "../Utils/variables";
+import { Text } from "native-base";
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import variable from './../native-base-theme/variables/platform'
 
@@ -32,6 +27,8 @@ export default class InputTime extends Component {
     };
 
     render() {
+        let splitDate = this.props.value.split(":");
+
         return (
             <View>
                 <TouchableOpacity onPress={this.showDateTimePicker} style={{
@@ -59,7 +56,7 @@ export default class InputTime extends Component {
                     mode="time"
                     is24Hour={true}
                     locale="cs"
-                    date={new Date("1995-12-17T" + this.props.value + ":00")}
+                    date={new Date(2019,1,1,splitDate[0], splitDate[1])}
                 />
             </View>
         );

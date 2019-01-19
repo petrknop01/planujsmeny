@@ -1,8 +1,12 @@
-import React, { Component } from 'react';
+/**
+ * Řádek pro směnu
+ */
+
+import React from 'react';
 import { View } from "react-native";
 import { Text } from "native-base";
-import { Colors, FontSize, DayNamesShort } from "../Utils/variables";
-import { invertColor } from "../Utils/functions";
+import { FontSize, DayNamesShort } from "./../../Utils/variables";
+import { invertColor } from "./../../Utils/functions";
 
 export default function ShiftListItem(props) {
     return (

@@ -1,18 +1,15 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
+ * Setting screen
+ * - screen pro zobrazení nastavení obrazovky
  */
 
 import React, { Component } from 'react';
 import { Modal, Switch, Slider, View } from "react-native";
-import { Container, Header, Title, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text } from 'native-base';
+import { Container, Header, Title, Content, Footer, FooterTab, Button, Left, Right, Body, Text } from 'native-base';
 import DataStore from "./../Utils/dataStore";
 import { Colors } from "./../Utils/variables"
 
-function SettingItem({ dataKey, data, label, unit, minValue, maxValue, onChange }) {
+function SettingItem({ data, label, unit, minValue, maxValue, onChange }) {
     return (
         <View
             style={{

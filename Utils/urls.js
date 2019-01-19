@@ -1,3 +1,8 @@
+/**
+ * Třída pro url
+ */
+
+
 export const UrlsFull = {
     login: "https://www.planujsmeny.cz/index.php?o=login#",
     registration: "https://www.planujsmeny.cz/index.php?o=registration"

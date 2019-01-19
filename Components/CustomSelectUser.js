@@ -1,5 +1,5 @@
 /**
- * Futbalito app, starting layout
+ * Komponenta pro výběr uživatele s dostupností uživatele
  */
 
 import React, { Component } from 'react';
@@ -8,9 +8,7 @@ import {
     ScrollView,
     TouchableOpacity,
     View,
-    Platform,
-    Modal,
-    Dimensions
+    Modal
 } from 'react-native';
 
 import {

@@ -1,24 +1,14 @@
-import React, { Component } from 'react';
+/**
+ * Řádek pro plán směn
+ */
+
+import React from 'react';
 import { View, TouchableOpacity } from "react-native";
 import { Text, Button, Icon } from "native-base";
-import { Colors, FontSize, DayNamesShort } from "../Utils/variables";
-import { invertColor } from "../Utils/functions";
-import LoadingButton from "./../Components/LoadingButton"
+import { Colors, FontSize, DayNamesShort } from "./../../Utils/variables";
+import { invertColor } from "./../../Utils/functions";
+import LoadingButton from "./../../Components/LoadingButton"
 
-function Comment({ item }) {
-    return (
-        <View
-            style={{
-                borderRadius: 5,
-                overflow: "hidden",
-                backgroundColor: "white",
-                marginBottom: 10,
-                flex: 1,
-            }}>
-            <Text style={{ fontWeight: "bold", padding: 10, }}>{item}</Text>
-        </View>
-    );
-}
 
 
 function Shift({noEdit, item, onPressEdit, onPressDelete }) {
