@@ -9,7 +9,7 @@ import { Spinner } from "native-base";
 
 import { Colors, MonthNames, MonthNamesShort, DayNames, DayNamesShort } from "../Utils/variables";
 
-import { LocaleConfig, Agenda } from 'react-native-calendars';
+import { LocaleConfig, Agenda } from './react-native-calendars';
 
 LocaleConfig.locales['cs'] = {
     monthNames: MonthNames,
